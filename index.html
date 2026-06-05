@@ -3,536 +3,328 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>消費者 vs 生産者 思考診断</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<title>消費者 or 生産者 思考診断</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --border: #dddbd4;
-    --consumer: #e0334c;
-    --producer: #0891b2;
-    --gold: #d97706;
-    --text: #1a1a1a;
-    --text-sub: #4a4a4a;
-    --muted: #888880;
-    --shadow: 0 2px 12px rgba(0,0,0,0.08);
-    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; min-height: 100vh; overflow-x: hidden; }
-  .app { max-width: 640px; margin: 0 auto; padding: 32px 20px 80px; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f5f4f0;font-family:'Noto Sans JP',sans-serif;color:#2d2d2d;min-height:100vh}
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px 60px}
 
-  .header { text-align: center; margin-bottom: 28px; padding: 36px 24px 32px; background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); }
-  .tag { display: inline-block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--producer); background: rgba(8,145,178,0.1); padding: 5px 14px; border-radius: 100px; margin-bottom: 16px; font-weight: 700; }
-  .title { font-family: 'Noto Serif JP', serif; font-size: clamp(24px, 6vw, 38px); font-weight: 900; line-height: 1.3; margin-bottom: 12px; }
-  .title .accent-c { color: var(--consumer); }
-  .title .accent-p { color: var(--producer); }
-  .subtitle { font-size: 14px; color: var(--text-sub); line-height: 1.8; }
-  .subtitle small { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }
+/* Header */
+.header{text-align:center;padding:40px 0 32px}
+.header-badge{display:inline-block;background:linear-gradient(135deg,#e0334c,#0891b2);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;padding:6px 16px;border-radius:20px;margin-bottom:16px}
+.header h1{font-family:'Noto Serif JP',serif;font-size:clamp(22px,5vw,32px);font-weight:700;line-height:1.4;color:#1a1a2e;margin-bottom:12px}
+.header p{font-size:14px;color:#666;line-height:1.7}
 
-  .dots { display: flex; justify-content: center; gap: 7px; margin-bottom: 18px; padding: 12px 0 2px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
-  .dot.answered { background: var(--producer); }
-  .dot.current { background: var(--gold); width: 22px; border-radius: 4px; }
+/* Progress */
+.progress-wrap{background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.progress-label{font-size:13px;color:#888}
+.progress-num{font-size:18px;font-weight:700;color:#0891b2}
+.progress-bar{height:8px;background:#e8e8e8;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#0891b2,#06b6d4);border-radius:4px;transition:width .4s ease}
 
-  .progress-wrap { margin-bottom: 20px; background: var(--surface); border-radius: 12px; padding: 16px 20px; box-shadow: var(--shadow); }
-  .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .progress-text { font-size: 14px; font-weight: 700; color: var(--text); }
-  .progress-pct { font-size: 13px; font-weight: 700; color: var(--producer); }
-  .progress-bar { height: 6px; background: #e8e6df; border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--consumer), var(--producer)); border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+/* Question Card */
+.q-card{background:#fff;border-radius:20px;padding:28px 24px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.q-cat{display:inline-block;background:#f0f9ff;color:#0891b2;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;margin-bottom:14px;letter-spacing:1px}
+.q-text{font-family:'Noto Serif JP',serif;font-size:clamp(16px,3.5vw,20px);font-weight:700;line-height:1.6;color:#1a1a2e;margin-bottom:24px}
 
-  .question-card { background: #fff; border-radius: 16px; padding: 28px 28px 24px; margin-bottom: 16px; box-shadow: var(--shadow-lg); border-top: 4px solid; border-image: linear-gradient(90deg, var(--consumer), var(--producer)) 1; animation: slideIn 0.35s ease; }
-  @keyframes slideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-  .question-num { font-size: 12px; font-weight: 700; letter-spacing: 0.15em; color: var(--producer); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-  .question-num .line { flex: 1; height: 1px; background: var(--border); }
-  .question-text { font-family: 'Noto Serif JP', serif; font-size: clamp(16px, 3.8vw, 20px); font-weight: 700; line-height: 1.7; color: var(--text); }
+/* Choices */
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice-btn{display:flex;align-items:center;gap:14px;padding:14px 18px;border:2px solid #e8e8e8;border-radius:14px;background:#fafafa;cursor:pointer;transition:all .2s;text-align:left;font-family:'Noto Sans JP',sans-serif;font-size:14px;line-height:1.5;color:#2d2d2d;width:100%}
+.choice-btn:hover{border-color:#0891b2;background:#f0f9ff;transform:translateX(4px)}
+.choice-btn.selected{border-color:#0891b2;background:#e0f2fe;color:#0c4a6e}
+.choice-label{min-width:28px;height:28px;border-radius:50%;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;transition:all .2s}
+.choice-btn.selected .choice-label{background:#0891b2;color:#fff}
 
-  .options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-  .option-btn { background: #fff; border: 2px solid var(--border); border-radius: 12px; padding: 18px 20px; text-align: left; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: flex-start; gap: 14px; color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; line-height: 1.7; box-shadow: var(--shadow); }
-  .option-btn:hover { border-color: var(--producer); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(8,145,178,0.15); }
-  .option-btn.selected-a { border-color: var(--consumer); background: rgba(224,51,76,0.05); box-shadow: 0 4px 16px rgba(224,51,76,0.15); }
-  .option-btn.selected-b { border-color: var(--producer); background: rgba(8,145,178,0.05); box-shadow: 0 4px 16px rgba(8,145,178,0.15); }
-  .option-letter { width: 32px; height: 32px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; transition: all 0.2s; color: var(--muted); }
-  .option-btn.selected-a .option-letter { background: var(--consumer); border-color: var(--consumer); color: #fff; }
-  .option-btn.selected-b .option-letter { background: var(--producer); border-color: var(--producer); color: #fff; }
-  .option-text { flex: 1; }
+/* Nav */
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px}
+.btn-prev{padding:12px 24px;border:2px solid #ccc;border-radius:12px;background:#fff;color:#888;cursor:pointer;font-size:14px;font-family:'Noto Sans JP',sans-serif;font-weight:700;transition:all .2s}
+.btn-prev:hover{border-color:#888;color:#444}
+.btn-next{flex:1;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#0891b2,#06b6d4);color:#fff;cursor:pointer;font-size:16px;font-family:'Noto Sans JP',sans-serif;font-weight:700;transition:all .2s;box-shadow:0 4px 12px rgba(8,145,178,.3)}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(8,145,178,.4)}
+.btn-next:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:none}
 
-  .nav-row { display: flex; gap: 12px; }
-  .btn { padding: 16px 20px; border: none; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 700; transition: all 0.2s; border-radius: 12px; flex: 1; }
-  .btn-ghost { background: #fff; border: 2px solid var(--border); color: var(--text-sub); box-shadow: var(--shadow); }
-  .btn-ghost:hover:not(:disabled) { border-color: var(--muted); color: var(--text); }
-  .btn-ghost:disabled { opacity: 0.35; cursor: not-allowed; }
-  .btn-primary { background: var(--producer); color: #fff; box-shadow: 0 4px 16px rgba(8,145,178,0.35); flex: 2; }
-  .btn-primary:hover:not(:disabled) { background: #0779a0; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(8,145,178,0.4); }
-  .btn-primary:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; box-shadow: none; }
+/* Start Screen */
+.start-screen{text-align:center;padding:20px 0}
+.start-card{background:#fff;border-radius:24px;padding:40px 32px;box-shadow:0 4px 24px rgba(0,0,0,.08);margin-bottom:24px}
+.start-icon{font-size:56px;margin-bottom:20px}
+.start-card h2{font-family:'Noto Serif JP',serif;font-size:24px;font-weight:700;color:#1a1a2e;margin-bottom:16px;line-height:1.4}
+.start-card p{font-size:14px;color:#666;line-height:1.8;margin-bottom:8px}
+.start-meta{display:flex;justify-content:center;gap:20px;margin:24px 0;flex-wrap:wrap}
+.meta-item{background:#f0f9ff;border-radius:12px;padding:12px 20px;font-size:13px;color:#0891b2;font-weight:700}
+.btn-start{display:block;width:100%;padding:18px;border:none;border-radius:16px;background:linear-gradient(135deg,#e0334c,#f43f5e);color:#fff;font-size:18px;font-family:'Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(224,51,76,.35);transition:all .2s;margin-top:8px}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(224,51,76,.45)}
 
-  /* RESULT */
-  .result-screen { display: none; }
-  .result-screen.show { display: block; animation: slideIn 0.45s ease; }
-  .score-hero { background: #fff; border-radius: 20px; text-align: center; padding: 44px 24px 36px; margin-bottom: 16px; box-shadow: var(--shadow-lg); }
-  .score-label { font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
-  .score-number { font-family: 'Noto Serif JP', serif; font-size: clamp(80px, 18vw, 120px); font-weight: 900; line-height: 1; margin-bottom: 4px; }
-  .score-number.type-producer { color: var(--producer); }
-  .score-number.type-mixed    { color: var(--gold); }
-  .score-number.type-consumer { color: var(--consumer); }
-  .score-max { font-size: 15px; color: var(--muted); margin-bottom: 20px; font-weight: 500; }
-  .type-badge { display: inline-block; padding: 10px 28px; font-family: 'Noto Serif JP', serif; font-size: 17px; font-weight: 700; border-radius: 100px; }
-  .type-consumer { background: rgba(224,51,76,0.1); color: var(--consumer); border: 2px solid rgba(224,51,76,0.3); }
-  .type-mixed    { background: rgba(217,119,6,0.1);  color: var(--gold);     border: 2px solid rgba(217,119,6,0.3); }
-  .type-producer { background: rgba(8,145,178,0.1);  color: var(--producer); border: 2px solid rgba(8,145,178,0.3); }
+/* Result Screen */
+.result-screen{text-align:center}
+.result-header{padding:32px 0 24px}
+.result-type-badge{display:inline-block;padding:8px 24px;border-radius:24px;font-size:13px;font-weight:700;letter-spacing:1px;margin-bottom:12px}
+.result-title{font-family:'Noto Serif JP',serif;font-size:clamp(26px,6vw,36px);font-weight:700;line-height:1.3;margin-bottom:8px}
+.result-subtitle{font-size:14px;color:#888}
 
-  .gauge-wrap { background: #fff; border-radius: 14px; padding: 20px 24px; margin-bottom: 14px; box-shadow: var(--shadow); }
-  .gauge-labels { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--text-sub); margin-bottom: 12px; }
-  .gauge-track { height: 10px; background: #e8e6df; border-radius: 5px; overflow: hidden; }
-  .gauge-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--consumer), var(--gold), var(--producer)); transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+.score-card{background:#fff;border-radius:24px;padding:32px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.score-display{font-family:'Noto Serif JP',serif;font-size:64px;font-weight:700;line-height:1;margin-bottom:8px}
+.score-max{font-size:16px;color:#888}
+.gauge-wrap{margin:20px 0;height:20px;background:#e8e8e8;border-radius:10px;overflow:hidden}
+.gauge-fill{height:100%;border-radius:10px;transition:width 1.2s ease}
+.score-breakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.breakdown-item{background:#f8f8f8;border-radius:10px;padding:10px 6px;text-align:center}
+.breakdown-label{font-size:11px;color:#888;margin-bottom:4px}
+.breakdown-val{font-size:20px;font-weight:700}
 
-  .breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-  .breakdown-card { background: #fff; border-radius: 14px; padding: 22px 16px; text-align: center; box-shadow: var(--shadow); border-top: 3px solid transparent; }
-  .breakdown-card.c-side { border-top-color: var(--consumer); }
-  .breakdown-card.p-side { border-top-color: var(--producer); }
-  .breakdown-num { font-family: 'Noto Serif JP', serif; font-size: 44px; font-weight: 900; line-height: 1; margin-bottom: 8px; }
-  .c-side .breakdown-num { color: var(--consumer); }
-  .p-side .breakdown-num { color: var(--producer); }
-  .breakdown-label { font-size: 12px; color: var(--text-sub); font-weight: 500; line-height: 1.5; }
+.result-card{background:#fff;border-radius:20px;padding:28px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);text-align:left}
+.result-card h3{font-family:'Noto Serif JP',serif;font-size:18px;font-weight:700;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid #f0f0f0}
+.result-card p{font-size:14px;line-height:1.8;color:#444}
 
-  .result-detail { background: #fff; border-radius: 14px; padding: 26px 24px; margin-bottom: 12px; box-shadow: var(--shadow); }
-  .result-detail h3 { font-family: 'Noto Serif JP', serif; font-size: 17px; font-weight: 700; margin-bottom: 12px; color: var(--text); line-height: 1.5; }
-  .result-detail p { font-size: 15px; color: var(--text-sub); line-height: 1.9; }
+.type-consumer .result-type-badge{background:#fde8ec;color:#e0334c}
+.type-consumer .result-title{color:#e0334c}
+.type-consumer .score-display{color:#e0334c}
+.type-consumer .gauge-fill{background:linear-gradient(90deg,#e0334c,#fb7185)}
+.type-consumer .result-card h3{color:#e0334c}
 
-  .retry-btn { width: 100%; padding: 18px; background: #fff; border: 2px solid var(--border); color: var(--text-sub); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; border-radius: 12px; transition: all 0.2s; margin-top: 4px; box-shadow: var(--shadow); }
-  .retry-btn:hover { border-color: var(--producer); color: var(--producer); transform: translateY(-2px); }
+.type-balance .result-type-badge{background:#fef3c7;color:#d97706}
+.type-balance .result-title{color:#d97706}
+.type-balance .score-display{color:#d97706}
+.type-balance .gauge-fill{background:linear-gradient(90deg,#d97706,#fbbf24)}
+.type-balance .result-card h3{color:#d97706}
+
+.type-semi .result-type-badge{background:#e0fdf4;color:#0ea5b0}
+.type-semi .result-title{color:#0ea5b0}
+.type-semi .score-display{color:#0ea5b0}
+.type-semi .gauge-fill{background:linear-gradient(90deg,#0ea5b0,#34d399)}
+.type-semi .result-card h3{color:#0ea5b0}
+
+.type-producer .result-type-badge{background:#e0f2fe;color:#0891b2}
+.type-producer .result-title{color:#0891b2}
+.type-producer .score-display{color:#0891b2}
+.type-producer .gauge-fill{background:linear-gradient(90deg,#0891b2,#06b6d4)}
+.type-producer .result-card h3{color:#0891b2}
+
+.btn-retry{display:block;width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,#e0334c,#f43f5e);color:#fff;font-size:16px;font-family:'Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(224,51,76,.3);transition:all .2s;margin-top:8px}
+.btn-retry:hover{transform:translateY(-2px)}
+
+.hidden{display:none}
 </style>
 </head>
 <body>
-<div class="app">
-  <div id="quiz-section">
-    <div class="header">
-      <div class="tag">Mindset Diagnostic</div>
-      <h1 class="title"><span class="accent-c">消費者</span> or <span class="accent-p">生産者</span><br>思考診断</h1>
-      <p class="subtitle">10の質問に直感で答えるだけ<br>あなたの思考パターンを10点満点で分析します<small>200問からランダム出題 — 毎回違う設問で診断できます</small></p>
-    </div>
-    <div class="dots" id="dots"></div>
-    <div class="progress-wrap">
-      <div class="progress-info">
-        <span class="progress-text" id="progress-text">Q1 / 10</span>
-        <span class="progress-pct" id="progress-pct">0%</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-    </div>
-    <div class="question-card" id="question-card">
-      <div class="question-num" id="question-num">Q01 <span class="line"></span></div>
-      <div class="question-text" id="question-text"></div>
-    </div>
-    <div class="options" id="options"></div>
-    <div class="nav-row">
-      <button class="btn btn-ghost" id="prev-btn" onclick="prevQuestion()">← 戻る</button>
-      <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" disabled>次の質問へ →</button>
-    </div>
-  </div>
+<div class="wrap">
 
-  <div class="result-screen" id="result-section">
-    <div class="score-hero">
-      <div class="score-label">Your Producer Score</div>
-      <div class="score-number" id="score-num">0</div>
-      <div class="score-max">点 / 10点満点</div>
-      <div class="type-badge" id="type-badge"></div>
+<!-- Start Screen -->
+<div id="startScreen">
+  <div class="header">
+    <div class="header-badge">MINDSET DIAGNOSIS</div>
+    <h1>消費者 or 生産者<br>思考診断</h1>
+    <p>あなたの思考パターンを200問から診断します</p>
+  </div>
+  <div class="start-card">
+    <div class="start-icon">🧠</div>
+    <h2>あなたは「消費する人」？<br>それとも「生み出す人」？</h2>
+    <p>日常・仕事・お金・学び・SNS・マインドセットなど<br>20カテゴリ200問からランダムに10問を抽出して診断します。</p>
+    <p>毎回違う問いで、何度でも新鮮な発見があります。</p>
+    <div class="start-meta">
+      <div class="meta-item">📋 全10問</div>
+      <div class="meta-item">⏱️ 約3分</div>
+      <div class="meta-item">🎯 4択式</div>
+      <div class="meta-item">🔄 ランダム出題</div>
     </div>
-    <div class="gauge-wrap">
-      <div class="gauge-labels"><span>🛒 消費者思考</span><span>⚡ 生産者思考</span></div>
-      <div class="gauge-track"><div class="gauge-fill" id="gauge-fill" style="width:0%"></div></div>
-    </div>
-    <div class="breakdown">
-      <div class="breakdown-card c-side"><div class="breakdown-num" id="c-count">0</div><div class="breakdown-label">消費者思考<br>の回答数</div></div>
-      <div class="breakdown-card p-side"><div class="breakdown-num" id="p-count">0</div><div class="breakdown-label">生産者思考<br>の回答数</div></div>
-    </div>
-    <div class="result-detail"><h3 id="result-title"></h3><p id="result-desc"></p></div>
-    <div class="result-detail"><h3>📌 あなたへのメッセージ</h3><p id="result-advice"></p></div>
-    <button class="retry-btn" onclick="resetQuiz()">↺ もう一度診断する（新しい10問）</button>
+    <button class="btn-start" onclick="startQuiz()">診断スタート →</button>
   </div>
 </div>
 
+<!-- Quiz Screen -->
+<div id="quizScreen" class="hidden">
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span class="progress-label">進捗</span>
+      <span class="progress-num" id="progressNum">1 / 10</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+  </div>
+  <div class="q-card">
+    <div class="q-cat" id="qCat"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+  <div class="nav">
+    <button class="btn-prev" id="btnPrev" onclick="prevQ()">← 前へ</button>
+    <button class="btn-next" id="btnNext" onclick="nextQ()" disabled>次へ →</button>
+  </div>
+</div>
+
+<!-- Result Screen -->
+<div id="resultScreen" class="hidden">
+  <div class="result-screen" id="resultContent"></div>
+</div>
+
+</div>
+
 <script>
-// ============================================================
-// 200問データベース（A=消費者思考 / B=生産者思考）
-// ============================================================
-const ALL_QUESTIONS = [
-  // --- 日常・体験 ---
-  { text:"休日に新しいカフェを見つけたとき、まず何を考えますか？", a:"雰囲気いい！次は誰と来ようかな。インスタに投稿しよっと。", b:"この内装のコンセプト、どうやって集客してるんだろう。自分のビジネスに活かせるかも。" },
-  { text:"おいしいランチを食べたとき、真っ先にすることは？", a:"写真を撮ってSNSに投稿する。", b:"なぜこの味になるのか、再現できないか考える。" },
-  { text:"旅行先で感動する景色に出会ったとき、あなたは？", a:"できるだけ多く写真を撮り、思い出として残す。", b:"この場所をどうすれば多くの人に届けられるか考える。" },
-  { text:"映画を観て感動した後、最初にすることは？", a:"友人におすすめを伝える。", b:"なぜ感動したのか構造を分析し、自分のコンテンツに活かす。" },
-  { text:"美容室でいいヘアスタイルになったとき？", a:"鏡を見て満足し、次の予約を入れる。", b:"どんな技術・提案が良かったのか、自分の仕事のヒントを探す。" },
-  { text:"読んだ本がすごく良かったとき、あなたは？", a:"誰かにおすすめするか、次に読む本を探す。", b:"内容を自分の言葉でまとめ、発信するネタにする。" },
-  { text:"好きなブランドの新商品が出たとき？", a:"すぐに購入を検討する。", b:"どんな戦略でこの商品を出したのか考察する。" },
-  { text:"ジムやヨガで体が変わってきたと感じたとき？", a:"もっと続けてキープしたいと思う。", b:"このプログラムを他の人にも伝えたい・教えたいと思う。" },
-  { text:"気に入ったポッドキャストを聴いたとき？", a:"ながら聴きしながら次のエピソードを楽しむ。", b:"どんな構成・話し方が響いたか分析する。" },
-  { text:"すごく居心地いいホテルに泊まったとき？", a:"また来たいな、と思う。", b:"この体験をどう自分のサービスに応用できるか考える。" },
+const ALL_QUESTIONS = [{"id": 1, "cat": "日常・体験", "q": "新しいカフェができたとき、あなたはどうしますか？", "a": "友達に教えてもらうまで知らない", "b": "SNSで見かけたら行ってみる", "c": "自分でリサーチして早めに行く", "d": "行った体験をブログや投稿でシェアする"}, {"id": 2, "cat": "日常・体験", "q": "休日の過ごし方で最も近いのは？", "a": "ずっとスマホやテレビで時間が過ぎる", "b": "何となく出かけて消費して終わる", "c": "学びや体験を意識して行動する", "d": "休日も何か生み出す活動をしている"}, {"id": 3, "cat": "日常・体験", "q": "美味しいレストランに行ったとき、あなたは？", "a": "ただ食べて満足する", "b": "写真だけ撮ってSNSに上げる", "c": "料理の工夫や演出を観察して学ぶ", "d": "そのエッセンスを自分の仕事に活かす"}, {"id": 4, "cat": "日常・体験", "q": "旅行先での行動で近いのは？", "a": "ガイドブック通りの観光スポットだけ回る", "b": "グルメやショッピングを楽しむ", "c": "地元の文化や暮らしを積極的に知ろうとする", "d": "旅の学びをコンテンツや仕事に還元する"}, {"id": 5, "cat": "日常・体験", "q": "映画を観た後、あなたはどうしますか？", "a": "面白かったかどうかだけ感想を持つ", "b": "友人に感想を話す", "c": "作品の背景や監督の意図を調べる", "d": "その映画から得た気づきをアウトプットする"}, {"id": 6, "cat": "日常・体験", "q": "スーパーで買い物するとき、意識していることは？", "a": "特に何も考えず必要なものを買う", "b": "安いものや特売品を選ぶ", "c": "品質・産地・成分を確認して選ぶ", "d": "仕入れの仕組みや価格設定の背景を考える"}, {"id": 7, "cat": "日常・体験", "q": "行列ができている店を見たとき、あなたは？", "a": "混んでいるから避ける", "b": "とりあえず並んで体験する", "c": "なぜ人気なのか分析しながら体験する", "d": "その集客の仕組みを自分のビジネスに応用する"}, {"id": 8, "cat": "日常・体験", "q": "日常的に「もったいない」と感じるのはどんなとき？", "a": "食べ物や物を捨てるとき", "b": "お金を無駄遣いしたとき", "c": "時間を何も生まずに過ごしたとき", "d": "学びや体験を誰かに伝えられなかったとき"}, {"id": 9, "cat": "日常・体験", "q": "朝起きてまず何をしますか？", "a": "スマホでSNSやニュースを見る", "b": "とりあえず準備して会社や仕事へ", "c": "その日の目標を確認してから動く", "d": "前日の振り返りと当日の計画を立ててから動く"}, {"id": 10, "cat": "日常・体験", "q": "「経験値が上がった」と感じるのはどんなとき？", "a": "楽しいことをたくさんしたとき", "b": "新しい場所や人に出会ったとき", "c": "失敗から学んで次に活かせたとき", "d": "自分の経験を誰かの役に立てられたとき"}, {"id": 11, "cat": "お金・収入", "q": "お金に対する基本的なスタンスは？", "a": "あればあるほど使いたい", "b": "貯めておけば安心", "c": "お金は自己投資に使うもの", "d": "お金は価値を生み出すツール"}, {"id": 12, "cat": "お金・収入", "q": "給料日に真っ先に考えることは？", "a": "何を買おうか", "b": "家賃や生活費を払ったら残りを貯金", "c": "投資や学びに回す額を決める", "d": "収益構造を改善するための再投資を考える"}, {"id": 13, "cat": "お金・収入", "q": "収入を増やすとしたら、どの方法が自然に思えますか？", "a": "宝くじや副業アプリを試す", "b": "残業や掛け持ちで労働時間を増やす", "c": "スキルアップして単価を上げる", "d": "仕組みを作って自動的に稼げる状態にする"}, {"id": 14, "cat": "お金・収入", "q": "お金の使い方で最も優先しているのは？", "a": "日々の楽しみや消費", "b": "将来への貯蓄", "c": "スキルや知識への投資", "d": "収益を生む資産への投資"}, {"id": 15, "cat": "お金・収入", "q": "「高い買い物」をするとき、何を基準にしますか？", "a": "欲しいかどうか", "b": "他の人も持っているか", "c": "長期的に価値があるか", "d": "それが収益や成長につながるか"}, {"id": 16, "cat": "お金・収入", "q": "収入が増えたとき、まず何をしますか？", "a": "生活レベルを上げる", "b": "ほしかったものを買う", "c": "余剰分を投資や学習に回す", "d": "次の収益源を作るために再投資する"}, {"id": 17, "cat": "お金・収入", "q": "「お金がない」と感じたとき、どう対処しますか？", "a": "節約を頑張る", "b": "誰かに借りるか助けてもらう", "c": "収入を増やす方法を考える", "d": "収益の仕組みそのものを見直す"}, {"id": 18, "cat": "お金・収入", "q": "お金と時間、どちらを大切にしますか？", "a": "お金があれば時間は買える", "b": "今の生活ができれば両方そこそこでいい", "c": "時間を買うためにお金を使う", "d": "時間とお金が両方増える仕組みを作る"}, {"id": 19, "cat": "お金・収入", "q": "「不労所得」に対してどう思いますか？", "a": "うさんくさいと感じる", "b": "あったらいいけど自分には無理", "c": "仕組みを学んで目指したい", "d": "すでに作っているか、積極的に取り組んでいる"}, {"id": 20, "cat": "お金・収入", "q": "価格を決めるとき（または価値を判断するとき）の基準は？", "a": "相場や他の人に合わせる", "b": "できるだけ安くする", "c": "提供する価値に見合った金額にする", "d": "価値を高めて適正以上の価格を設定できるようにする"}, {"id": 21, "cat": "ビジネス・仕事", "q": "仕事において最も重視することは？", "a": "指示された通りにこなすこと", "b": "ミスをしないこと", "c": "成果を出し続けること", "d": "仕組みを作って組織を動かすこと"}, {"id": 22, "cat": "ビジネス・仕事", "q": "新しいプロジェクトが始まるとき、あなたは？", "a": "誰かが動くのを待つ", "b": "言われた通りに動く", "c": "自分から提案や改善案を出す", "d": "プロジェクト全体の設計から関わる"}, {"id": 23, "cat": "ビジネス・仕事", "q": "仕事で壁にぶつかったとき、どうしますか？", "a": "諦めるか誰かに任せる", "b": "上司や同僚に相談して解決を待つ", "c": "自分で調べて解決策を考える", "d": "その課題ごと仕組みを変えて再発を防ぐ"}, {"id": 24, "cat": "ビジネス・仕事", "q": "「いい仕事」とはどんな仕事だと思いますか？", "a": "楽で給料がいい仕事", "b": "安定していて長く続けられる仕事", "c": "自分が成長できる仕事", "d": "社会や人に価値を生み出す仕事"}, {"id": 25, "cat": "ビジネス・仕事", "q": "仕事の評価基準として重要だと思うのは？", "a": "勤続年数や年功序列", "b": "上司からの評価", "c": "数字で見える成果", "d": "生み出した付加価値の大きさ"}, {"id": 26, "cat": "ビジネス・仕事", "q": "チームで働くとき、あなたの役割は？", "a": "与えられた仕事をこなすメンバー", "b": "周りのサポートをするメンバー", "c": "主体的に動くリーダー的存在", "d": "チーム全体の方向性を設計するポジション"}, {"id": 27, "cat": "ビジネス・仕事", "q": "「残業」に対してどう考えますか？", "a": "頑張りの証だと思う", "b": "仕方ないが減らしたい", "c": "効率化して残業をなくすべき", "d": "仕組みで解決して残業が不要な状態を作る"}, {"id": 28, "cat": "ビジネス・仕事", "q": "競合他社のことをどう見ていますか？", "a": "敵なので気にしない", "b": "なんとなく気になる", "c": "参考にして自分のビジネスに活かす", "d": "市場全体を俯瞰して差別化戦略を立てる"}, {"id": 29, "cat": "ビジネス・仕事", "q": "仕事で最もやりがいを感じるのはいつ？", "a": "定時に上がれたとき", "b": "給料やボーナスが上がったとき", "c": "自分の成長を実感したとき", "d": "自分の仕事が誰かの人生を変えたとき"}, {"id": 30, "cat": "ビジネス・仕事", "q": "10年後のキャリアについて、今どう考えていますか？", "a": "あまり考えていない", "b": "今の仕事を続けていれば何とかなる", "c": "目標を持って逆算して動いている", "d": "すでに複数のシナリオを描いて準備している"}, {"id": 31, "cat": "学び・インプット", "q": "新しいスキルを学ぶとき、どんな方法をとりますか？", "a": "必要になったら考える", "b": "YouTubeや無料コンテンツで何となく学ぶ", "c": "体系的な講座や書籍で学ぶ", "d": "学んですぐ実践してフィードバックを得る"}, {"id": 32, "cat": "学び・インプット", "q": "本を読むとき、どんな姿勢で読みますか？", "a": "ほとんど本は読まない", "b": "面白いかどうか楽しみながら読む", "c": "メモを取りながら要点を整理して読む", "d": "読んだ内容をすぐ行動や発信に変える"}, {"id": 33, "cat": "学び・インプット", "q": "セミナーや講座に参加したとき、あなたは？", "a": "受け身で聞くだけ", "b": "いい話だったと満足して終わる", "c": "ノートにまとめて復習する", "d": "翌日から行動に落とし込む"}, {"id": 34, "cat": "学び・インプット", "q": "学びに投資することについて、どう思いますか？", "a": "お金がかかるから無料で十分", "b": "費用対効果が見えないと不安", "c": "自己投資は最も確実なリターンがある", "d": "学びへの投資は事業投資と同じ感覚で考える"}, {"id": 35, "cat": "学び・インプット", "q": "「知らないことを知った」とき、どう感じますか？", "a": "恥ずかしい、知っておくべきだった", "b": "へえ、そうなんだと流す", "c": "もっと詳しく知りたいと思う", "d": "これを誰かに伝えたい・活かしたいと思う"}, {"id": 36, "cat": "学び・インプット", "q": "情報収集の主な方法は？", "a": "テレビやSNSで流れてくるものを見るだけ", "b": "気になった記事をたまに読む", "c": "複数のメディアを意識的にチェックする", "d": "一次情報を取りにいき、自分なりに分析する"}, {"id": 37, "cat": "学び・インプット", "q": "昨年1年間で読んだ本は何冊くらいですか？", "a": "ほぼゼロ", "b": "1〜3冊", "c": "10冊以上", "d": "20冊以上、かつ実践に活かしている"}, {"id": 38, "cat": "学び・インプット", "q": "資格や認定についてどう思いますか？", "a": "取っても意味ない", "b": "持っていると安心", "c": "スキルの証明として活用できる", "d": "資格より実績と再現性が大事"}, {"id": 39, "cat": "学び・インプット", "q": "学んだことを他人に教えることについては？", "a": "自分が完全に理解してからでないと無理", "b": "聞かれたら答える", "c": "積極的にシェアして自分の理解も深める", "d": "教えること自体を仕事・コンテンツにしている"}, {"id": 40, "cat": "学び・インプット", "q": "「失敗から学ぶ」ことに対して、あなたは？", "a": "失敗は避けたい", "b": "失敗したら落ち込む", "c": "失敗を分析して次に活かす", "d": "失敗を資産として体系化して他者にも伝える"}, {"id": 41, "cat": "時間・習慣", "q": "1日の時間の使い方で最も近いのは？", "a": "なんとなく過ごして終わる", "b": "やることリストをこなす", "c": "優先順位を決めて主体的に動く", "d": "時間設計をして最大の成果を出す"}, {"id": 42, "cat": "時間・習慣", "q": "スマホを使う時間について意識していますか？", "a": "全く意識していない", "b": "なんとなく使いすぎと思っている", "c": "使用時間を管理して生産的に使う", "d": "スマホをビジネスツールとして戦略的に使う"}, {"id": 43, "cat": "時間・習慣", "q": "習慣化に取り組んでいることはありますか？", "a": "特にない", "b": "やろうとしたが続かなかった", "c": "いくつか習慣にできていることがある", "d": "習慣設計を仕組みとして理解して実践している"}, {"id": 44, "cat": "時間・習慣", "q": "「時間がない」と感じたとき、どうしますか？", "a": "仕方ないと諦める", "b": "もっと頑張って時間を捻出しようとする", "c": "何かを辞めて時間を作る", "d": "仕組みを変えて根本的に時間を生み出す"}, {"id": 45, "cat": "時間・習慣", "q": "朝の時間をどう使っていますか？", "a": "ギリギリまで寝る", "b": "準備で精一杯", "c": "学びや運動など自分のために使う", "d": "最も生産性の高い時間として戦略的に使う"}, {"id": 46, "cat": "時間・習慣", "q": "「やりたいことリスト」はありますか？", "a": "ない", "b": "頭の中にはある", "c": "書き出してある", "d": "優先順位・期限・行動計画まで落とし込んである"}, {"id": 47, "cat": "時間・習慣", "q": "睡眠についての意識は？", "a": "眠れたらいい", "b": "できれば7時間は寝たい", "c": "睡眠の質を意識して管理している", "d": "睡眠を生産性向上のための戦略的ツールとして使う"}, {"id": 48, "cat": "時間・習慣", "q": "「ルーティン」についてどう思いますか？", "a": "縛られる感じがして嫌", "b": "あったほうがいいとは思う", "c": "自分に合ったルーティンを持っている", "d": "ルーティンを最適化してパフォーマンスを最大化している"}, {"id": 49, "cat": "時間・習慣", "q": "隙間時間の使い方で近いのは？", "a": "SNSや動画で暇つぶし", "b": "ぼーっとして休む", "c": "ポッドキャストや読書で学ぶ", "d": "アイデア整理やアウトプットに使う"}, {"id": 50, "cat": "時間・習慣", "q": "1年後の自分を想像したとき、何を感じますか？", "a": "あまり変わらないと思う", "b": "少しは良くなっていたらいい", "c": "具体的な成長目標があってワクワクする", "d": "既に逆算した行動計画を実行している"}, {"id": 51, "cat": "SNS・発信", "q": "SNSでの主な活動は？", "a": "見るだけ", "b": "いいねやシェアをたまにする", "c": "自分の考えや体験を定期的に発信する", "d": "SNSをビジネスの集客・ブランディングツールとして活用する"}, {"id": 52, "cat": "SNS・発信", "q": "フォロワーが増えないとき、どう思いますか？", "a": "SNSは向いてないと諦める", "b": "もっと頻繁に投稿しなきゃと焦る", "c": "投稿の質や戦略を見直す", "d": "数より質・エンゲージメントを重視して改善する"}, {"id": 53, "cat": "SNS・発信", "q": "発信することへの抵抗感は？", "a": "強い（批判が怖い）", "b": "やや抵抗があるが頑張れる", "c": "ほとんどない", "d": "発信は価値提供であり義務だと思っている"}, {"id": 54, "cat": "SNS・発信", "q": "投稿する内容は？", "a": "日常の出来事やグルメ", "b": "面白いものの拡散・シェア", "c": "自分の専門知識や気づきを発信", "d": "ターゲットに向けた戦略的なコンテンツ"}, {"id": 55, "cat": "SNS・発信", "q": "SNSのアルゴリズムについて知っていますか？", "a": "よくわからない", "b": "なんとなく知っている", "c": "理解して投稿に活かしている", "d": "最新情報を常にキャッチして最適化している"}, {"id": 56, "cat": "SNS・発信", "q": "「バズった投稿」を見たとき、あなたは？", "a": "いいなあと羨む", "b": "シェアして終わり", "c": "なぜバズったか分析する", "d": "分析してすぐ自分の発信に取り入れる"}, {"id": 57, "cat": "SNS・発信", "q": "SNSのプロフィールを見直す頻度は？", "a": "作ったまま変えていない", "b": "気が向いたら", "c": "定期的に更新している", "d": "戦略的に磨き続けている"}, {"id": 58, "cat": "SNS・発信", "q": "動画コンテンツ（YouTube・Reels等）についてどう思いますか？", "a": "見る専門", "b": "作りたいけど難しそう", "c": "チャレンジ中または運用中", "d": "ビジネスの核として本格的に取り組んでいる"}, {"id": 59, "cat": "SNS・発信", "q": "発信の目的は何ですか？", "a": "特に目的はない", "b": "つながりを作るため", "c": "専門性を高めてブランドを作るため", "d": "集客・収益・影響力のすべてにつなげるため"}, {"id": 60, "cat": "SNS・発信", "q": "「炎上」のリスクをどう捉えますか？", "a": "怖いので発信を控えている", "b": "気をつけてはいるが不安", "c": "軸がぶれなければ問題ないと思っている", "d": "リスクを正しく理解して発信戦略に組み込んでいる"}, {"id": 61, "cat": "人間関係", "q": "あなたの周りにいる人たちは？", "a": "なんとなく集まった人たち", "b": "気が合う友人や仲間", "c": "刺激を与え合える仲間が多い", "d": "意図的に環境を選んでレベルの高い人と関わっている"}, {"id": 62, "cat": "人間関係", "q": "人に何かをお願いするとき、あなたは？", "a": "なるべく自分でやろうとする", "b": "頼むのが申し訳なくて言い出せない", "c": "明確に依頼して感謝する", "d": "お互いの強みを活かしてチームとして動く"}, {"id": 63, "cat": "人間関係", "q": "メンターや尊敬できる人がいますか？", "a": "特にいない", "b": "テレビや本の中の人なら", "c": "実際にアクセスできる人がいる", "d": "複数のメンターや師匠と定期的に関わっている"}, {"id": 64, "cat": "人間関係", "q": "ネガティブな人と関わったとき、どうしますか？", "a": "一緒に悩む", "b": "話を聞いてあげる", "c": "影響を受けないよう距離を保つ", "d": "関係の質を意識して環境をコントロールする"}, {"id": 65, "cat": "人間関係", "q": "人のために何かをするとき、あなたの動機は？", "a": "頼まれたから", "b": "良い人だと思われたい", "c": "相手に喜んでほしい", "d": "価値の循環が生まれると信じているから"}, {"id": 66, "cat": "人間関係", "q": "異なる業界や分野の人と話す機会は？", "a": "ほとんどない", "b": "たまにある", "c": "意識的に異業種交流に参加している", "d": "多様なネットワークを戦略的に構築している"}, {"id": 67, "cat": "人間関係", "q": "お客様（クライアント）との関係をどう捉えていますか？", "a": "お金をくれる人", "b": "来てくれたら嬉しい人", "c": "長期的な信頼関係を築く相手", "d": "共に価値を創造するパートナー"}, {"id": 68, "cat": "人間関係", "q": "人に感謝を伝えることについては？", "a": "恥ずかしくてなかなか言えない", "b": "言うようにしている", "c": "タイミングを逃さず具体的に伝えている", "d": "感謝の文化を組織やチームに根付かせている"}, {"id": 69, "cat": "人間関係", "q": "コミュニティや仲間と成長することについて？", "a": "一人でいる方が楽", "b": "コミュニティは気疲れする", "c": "信頼できるコミュニティに属して成長している", "d": "自分でコミュニティを作り・育てている"}, {"id": 70, "cat": "人間関係", "q": "「ギブ＆テイク」についてどう思いますか？", "a": "テイクできてこそ関係が成り立つ", "b": "公平にギブとテイクが大事", "c": "先にギブすることで信頼が生まれる", "d": "ギブし続けることが最大の戦略だと思っている"}, {"id": 71, "cat": "マインドセット", "q": "「自分にはできない」と思ったとき、どうしますか？", "a": "そのまま諦める", "b": "少しだけ頑張ってみる", "c": "できるようになるまで試行錯誤する", "d": "できない前提を疑って思い込みを壊す"}, {"id": 72, "cat": "マインドセット", "q": "失敗に対してどんな感情を持ちますか？", "a": "恥ずかしくて落ち込む", "b": "悔しいが仕方ない", "c": "次に活かせる学びだと捉える", "d": "失敗は成功への必要プロセスと完全に理解している"}, {"id": 73, "cat": "マインドセット", "q": "変化に対してどう反応しますか？", "a": "不安で現状維持を選びたい", "b": "様子を見てから動く", "c": "変化をチャンスと捉えて積極的に動く", "d": "変化を自ら起こす側にいる"}, {"id": 74, "cat": "マインドセット", "q": "「自己責任」という言葉についてどう思いますか？", "a": "押しつけがましい言葉", "b": "大事だけど重い", "c": "すべては自分の選択の結果だと受け入れている", "d": "自己責任の意識が行動の質を高めると確信している"}, {"id": 75, "cat": "マインドセット", "q": "成功している人を見たとき、どう感じますか？", "a": "羨ましい、自分には無理", "b": "運がよかったんだろう", "c": "どうやってそうなったか興味が湧く", "d": "自分も同じ道を歩けると確信してモデルにする"}, {"id": 76, "cat": "マインドセット", "q": "「限界」についてどう考えますか？", "a": "人には限界がある", "b": "頑張れば限界は超えられる", "c": "限界は今の自分の認識の枠", "d": "限界を設定しているのは自分自身だと知っている"}, {"id": 77, "cat": "マインドセット", "q": "「承認欲求」について自分はどうですか？", "a": "人から認められたくて行動している", "b": "気になるが振り回されないようにしている", "c": "内発的動機で行動できている", "d": "承認欲求を超えた使命感で動いている"}, {"id": 78, "cat": "マインドセット", "q": "困難な状況に置かれたとき、どう行動しますか？", "a": "誰かが解決してくれるのを待つ", "b": "とにかく我慢する", "c": "解決策を探して行動する", "d": "困難を利用して飛躍の機会に変える"}, {"id": 79, "cat": "マインドセット", "q": "「完璧主義」について、あなたは？", "a": "完璧でないと動けない", "b": "完璧を目指しすぎて疲れる", "c": "8割でまず動いて改善する", "d": "スピード×改善のサイクルを意図的に回している"}, {"id": 80, "cat": "マインドセット", "q": "自己イメージについて、どう持っていますか？", "a": "自信がなく、自分はダメだと思いがち", "b": "普通の人間だと思っている", "c": "強みを自覚して自信を持って行動できる", "d": "なりたい自分を先にイメージして行動している"}, {"id": 81, "cat": "将来・目標", "q": "5年後の自分を具体的にイメージできますか？", "a": "全く想像できない", "b": "なんとなくのイメージはある", "c": "具体的な目標とビジョンがある", "d": "5年後のビジョンから逆算した計画を実行中"}, {"id": 82, "cat": "将来・目標", "q": "目標設定に対してどんなスタンスですか？", "a": "目標はプレッシャーになる", "b": "大まかな方向性があれば十分", "c": "SMARTな目標を設定して追いかける", "d": "目標を仕組みと習慣に変換して達成する"}, {"id": 83, "cat": "将来・目標", "q": "「夢」と「目標」の違いについては？", "a": "どちらも叶えばいいな程度", "b": "夢は理想、目標は現実的なもの", "c": "夢を目標に変えてアクションに落とすもの", "d": "夢を設定してプロセスをデザインするのが目標"}, {"id": 84, "cat": "将来・目標", "q": "老後について考えることはありますか？", "a": "考えたくない", "b": "なんとかなると思っている", "c": "具体的に準備を始めている", "d": "老後を意識せずに生涯現役でいられる仕組みを作っている"}, {"id": 85, "cat": "将来・目標", "q": "社会への貢献についてどう考えますか？", "a": "自分のことで精一杯", "b": "機会があれば貢献したい", "c": "仕事やコンテンツで貢献を実現している", "d": "自分のビジネスや活動の軸に社会貢献を据えている"}, {"id": 86, "cat": "将来・目標", "q": "「やりたいことがわからない」という状態について？", "a": "自分もそれで悩んでいる", "b": "やりたいことなんて見つからなくていい", "c": "行動しながら見つけていくものと思っている", "d": "やりたいことを作り・育てるのが生産者だと知っている"}, {"id": 87, "cat": "将来・目標", "q": "目標達成できなかったとき、どう対処しますか？", "a": "もう目標は立てない", "b": "自分を責めて終わり", "c": "原因を分析して目標や計画を修正する", "d": "失敗を設計に組み込んでPDCAを高速で回す"}, {"id": 88, "cat": "将来・目標", "q": "「豊かさ」とはどういうことだと思いますか？", "a": "お金をたくさん持つこと", "b": "不自由なく暮らせること", "c": "時間・お金・健康のバランスがとれた状態", "d": "自分の生き方を自分でデザインできている状態"}, {"id": 89, "cat": "将来・目標", "q": "引退・セカンドライフについてどう考えますか？", "a": "早く楽になりたい", "b": "今のうちに貯めておけばいい", "c": "好きな仕事を長く続けられるようにしたい", "d": "年齢に関係なく価値を生み続けられる状態を目指す"}, {"id": 90, "cat": "将来・目標", "q": "遺したいもの・伝えたいことはありますか？", "a": "特に考えたことがない", "b": "家族が幸せならそれでいい", "c": "自分の経験や学びを誰かに伝えたい", "d": "自分の哲学・仕組み・コンテンツを世界に遺す"}, {"id": 91, "cat": "マーケティング", "q": "「マーケティング」という言葉に対して？", "a": "難しそうで自分には関係ない", "b": "広告や宣伝のこと", "c": "顧客の課題を解決して価値を届ける活動", "d": "ビジネスの根幹として常に意識して実践している"}, {"id": 92, "cat": "マーケティング", "q": "お客様のニーズをどうやって把握していますか？", "a": "あまり把握できていない", "b": "来た人の反応を見て感覚でつかむ", "c": "アンケートや会話で定期的にリサーチする", "d": "データと対話を組み合わせて深いニーズを掘り下げる"}, {"id": 93, "cat": "マーケティング", "q": "「ターゲット」を決めることについては？", "a": "絞ると客が減りそうで怖い", "b": "なんとなく決めている", "c": "ペルソナを明確にして発信を最適化している", "d": "ニッチを極めるほど強みになると確信して実践中"}, {"id": 94, "cat": "マーケティング", "q": "価格設定の考え方は？", "a": "なるべく安くして集客する", "b": "相場に合わせる", "c": "価値を伝えて適正価格で売る", "d": "価格を上げながら顧客満足も上げる戦略を持っている"}, {"id": 95, "cat": "マーケティング", "q": "リピーター（常連客）を増やす方法について？", "a": "特に何もしていない", "b": "サービスをよくすれば自然に増える", "c": "フォローアップや特典で関係を維持する", "d": "LTVを意識してリテンション設計を仕組み化している"}, {"id": 96, "cat": "マーケティング", "q": "口コミ・紹介についてどう取り組んでいますか？", "a": "期待していない", "b": "来てくれたら嬉しい", "c": "紹介しやすい仕掛けを意図的に作っている", "d": "紹介の仕組みをマーケティングの柱にしている"}, {"id": 97, "cat": "マーケティング", "q": "「ブランディング」についてどう思いますか？", "a": "大企業のものでしょ", "b": "自分には早い", "c": "個人レベルで意識して取り組んでいる", "d": "世界観・哲学・ストーリーを一貫して設計している"}, {"id": 98, "cat": "マーケティング", "q": "メルマガ・LINE公式などのリストについては？", "a": "やっていない", "b": "あるが活用できていない", "c": "定期的に価値を提供して関係を深めている", "d": "リストをビジネスの最重要資産として戦略的に育てている"}, {"id": 99, "cat": "マーケティング", "q": "広告（Web広告・SNS広告）について？", "a": "お金がかかるからやらない", "b": "試したことはあるが難しい", "c": "費用対効果を測りながら運用している", "d": "広告設計・LPO・ROASまで最適化している"}, {"id": 100, "cat": "マーケティング", "q": "「売れない」と感じたとき、原因をどこに求めますか？", "a": "景気や時代のせい", "b": "商品やサービスが悪いのかも", "c": "マーケティングや伝え方を見直す", "d": "ファネル全体を分解して課題を特定する"}, {"id": 101, "cat": "創造・表現", "q": "クリエイティブな作業（文章・デザイン・動画等）に対して？", "a": "センスがないからできない", "b": "楽しいけど自信がない", "c": "継続してスキルを上げている", "d": "クリエイティブで価値を生み出せている"}, {"id": 102, "cat": "創造・表現", "q": "文章を書くことについては？", "a": "苦手で避けている", "b": "必要なときだけ書く", "c": "定期的にブログや投稿を書いている", "d": "文章で収益・集客・信頼を作っている"}, {"id": 103, "cat": "創造・表現", "q": "自分のオリジナルコンテンツを作ることについては？", "a": "自分には何も生み出せない", "b": "いつか作りたい", "c": "少しずつ作り始めている", "d": "コンテンツ制作を収益の柱にしている"}, {"id": 104, "cat": "創造・表現", "q": "「表現すること」への恐れはありますか？", "a": "強くある", "b": "少し緊張する", "c": "慣れてきてほとんどない", "d": "表現しないことへの恐れの方が大きい"}, {"id": 105, "cat": "創造・表現", "q": "アイデアはどうやって生み出しますか？", "a": "降ってくるのを待つ", "b": "考えても出てこない", "c": "日常のインプットからアイデアを拾う", "d": "アイデアを生み出す仕組みと習慣がある"}, {"id": 106, "cat": "創造・表現", "q": "自分の「世界観」を持っていますか？", "a": "考えたことがない", "b": "なんとなくはある", "c": "言語化・視覚化できている", "d": "世界観をビジネスとブランドの核にしている"}, {"id": 107, "cat": "創造・表現", "q": "他人の作品やコンテンツをどう活用しますか？", "a": "ただ見て消費する", "b": "シェアして広める", "c": "学びとして分析・参考にする", "d": "インプットして自分のオリジナルに昇華する"}, {"id": 108, "cat": "創造・表現", "q": "スランプや創作の停滞についてどう対処しますか？", "a": "やる気が出るまで待つ", "b": "無理やりやろうとする", "c": "環境や習慣を変えてリセットする", "d": "停滞をシステムの問題と捉えて設計を変える"}, {"id": 109, "cat": "創造・表現", "q": "「センス」とは何だと思いますか？", "a": "生まれつきのもの", "b": "才能のある人だけが持つもの", "c": "インプットと実践で磨けるもの", "d": "再現性のある技術として習得・教えられるもの"}, {"id": 110, "cat": "創造・表現", "q": "完成させることと完璧にすることについて？", "a": "完璧でないと世に出せない", "b": "完璧を目指しすぎて完成しない", "c": "完成を優先して改善を続ける", "d": "リリースと改善のサイクルを高速で回している"}, {"id": 111, "cat": "テクノロジー・AI", "q": "AIツール（ChatGPT・Claude等）を使っていますか？", "a": "使っていない、怖い", "b": "試したことはある", "c": "日常的に活用している", "d": "AIをビジネスの中核として戦略的に組み込んでいる"}, {"id": 112, "cat": "テクノロジー・AI", "q": "テクノロジーの進化に対して、どんな姿勢ですか？", "a": "ついていけなくて不安", "b": "様子を見て遅れて使い始める", "c": "積極的に新しいツールを試す", "d": "テクノロジーの変化を先読みしてビジネスに活かす"}, {"id": 113, "cat": "テクノロジー・AI", "q": "AIが仕事を奪うことについて、どう感じますか？", "a": "恐怖を感じる", "b": "心配だが仕方ない", "c": "AIと共存できるスキルを磨いている", "d": "AIを使いこなす側になればチャンスだと捉えている"}, {"id": 114, "cat": "テクノロジー・AI", "q": "自動化・効率化ツールについてどう取り組んでいますか？", "a": "使いこなせていない", "b": "基本的なものは使っている", "c": "積極的に導入して時間を作っている", "d": "自動化の仕組みをビジネス設計の前提にしている"}, {"id": 115, "cat": "テクノロジー・AI", "q": "デジタルコンテンツ（電子書籍・動画・音声）の制作について？", "a": "考えたことがない", "b": "いつかやってみたい", "c": "制作・販売に取り組み始めている", "d": "デジタルコンテンツを収益の主軸にしている"}, {"id": 116, "cat": "テクノロジー・AI", "q": "Webサイトやオンラインプレゼンスについては？", "a": "ない、必要性を感じない", "b": "あるが更新していない", "c": "目的に合わせて管理・改善している", "d": "オンラインとオフラインを統合した戦略がある"}, {"id": 117, "cat": "テクノロジー・AI", "q": "データ・数値の活用について？", "a": "数字は苦手", "b": "売上など基本的な数字は見ている", "c": "KPIを設定して定期的に分析している", "d": "データドリブンな意思決定を仕組み化している"}, {"id": 118, "cat": "テクノロジー・AI", "q": "テクノロジーへの投資（ツール・サービス費用）について？", "a": "できるだけ無料で済ませたい", "b": "必要最低限は払う", "c": "費用対効果を考えて積極的に投資する", "d": "テクノロジー投資はレバレッジだと考えている"}, {"id": 119, "cat": "テクノロジー・AI", "q": "AIを使った教育・学習コンテンツについては？", "a": "AIは教育に向かないと思う", "b": "将来的には普及するかも", "c": "すでにAIを学びに活用している", "d": "AI×教育でビジネスを展開している"}, {"id": 120, "cat": "テクノロジー・AI", "q": "「デジタルトランスフォーメーション（DX）」について？", "a": "大企業の話", "b": "必要はわかるが進められていない", "c": "自分のビジネスに取り入れている", "d": "DXを通じて競合と差別化している"}, {"id": 121, "cat": "美容・健康", "q": "自分の美容・健康への意識は？", "a": "特に気にしていない", "b": "基本的なケアはしている", "c": "積極的に研究・実践している", "d": "美容と健康をビジネスと人生の軸にしている"}, {"id": 122, "cat": "美容・健康", "q": "美容や健康への投資についてどう考えますか？", "a": "お金がかかることに抵抗がある", "b": "必要なら多少は使う", "c": "自己投資として積極的にお金をかける", "d": "美容・健康は最高のパフォーマンスへの投資と位置付けている"}, {"id": 123, "cat": "美容・健康", "q": "食事についての意識は？", "a": "美味しければ何でもいい", "b": "カロリーや体重が気になる", "c": "栄養バランスと質を意識している", "d": "食事を脳・体・パフォーマンスの燃料として設計している"}, {"id": 124, "cat": "美容・健康", "q": "運動習慣はありますか？", "a": "全くない", "b": "たまにやる", "c": "定期的に運動している", "d": "運動をパフォーマンス向上の戦略として組み込んでいる"}, {"id": 125, "cat": "美容・健康", "q": "美容サービスを受けるとき（美容室・エステ等）、あなたは？", "a": "安いところに行く", "b": "口コミを参考にして選ぶ", "c": "専門家との信頼関係を大切にして通い続ける", "d": "サービスの価値・技術・体験を多角的に評価する"}, {"id": 126, "cat": "美容・健康", "q": "ストレスへの対処法は？", "a": "ストレス発散に消費する（食べる・買う）", "b": "我慢する", "c": "根本原因を探って解決しようとする", "d": "ストレス耐性と回復力を高める仕組みがある"}, {"id": 127, "cat": "美容・健康", "q": "美容や健康の情報収集について？", "a": "SNSで流れてきたものを信じる", "b": "雑誌やテレビの情報を参考にする", "c": "科学的根拠のある情報を選んで実践する", "d": "一次情報を取りに行き、自分で検証している"}, {"id": 128, "cat": "美容・健康", "q": "「アンチエイジング」について？", "a": "年齢は仕方ない", "b": "気になるが何もしていない", "c": "積極的に取り組んでいる", "d": "美と健康を維持することで影響力を高めている"}, {"id": 129, "cat": "美容・健康", "q": "心の健康（メンタルケア）について？", "a": "あまり意識していない", "b": "つらいときだけ対処する", "c": "日常的にメンタルケアを実践している", "d": "精神的健康をビジネスと創造力の基盤として管理している"}, {"id": 130, "cat": "美容・健康", "q": "美容師やエステティシャンなど美容の専門家に対して？", "a": "サービスを提供してくれる人", "b": "技術が良ければそれでいい", "c": "信頼関係を築いてアドバイスをもらう存在", "d": "美容のパートナーとして共に価値を創る存在"}, {"id": 131, "cat": "電子書籍・コンテンツ", "q": "電子書籍を書くことについてどう思いますか？", "a": "自分には無理", "b": "いつかは書いてみたい", "c": "執筆中またはすでに出版している", "d": "電子書籍を収益・権威・集客のツールとして活用している"}, {"id": 132, "cat": "電子書籍・コンテンツ", "q": "コンテンツ（動画・音声・記事）を作ることの価値は？", "a": "特にわからない", "b": "好きな人がやればいい", "c": "自分の知識を整理・発信できる", "d": "資産として積み上がり寝ていても価値を生む"}, {"id": 133, "cat": "電子書籍・コンテンツ", "q": "「自分の知識は商品になる」と思いますか？", "a": "思わない、大した知識はない", "b": "専門家しか無理", "c": "誰でも整理すれば価値になる", "d": "すでに知識を商品にして収益を得ている"}, {"id": 134, "cat": "電子書籍・コンテンツ", "q": "コンテンツ販売のプラットフォーム（Kindle・note等）について？", "a": "知らない", "b": "知っているが使っていない", "c": "使ってみている", "d": "複数のプラットフォームで戦略的に展開している"}, {"id": 135, "cat": "電子書籍・コンテンツ", "q": "「著者」という肩書きについては？", "a": "出版社から本を出した人だけのもの", "b": "自分には縁遠い", "c": "セルフパブリッシングで誰でもなれる", "d": "著者としてのブランドを戦略的に構築している"}, {"id": 136, "cat": "電子書籍・コンテンツ", "q": "コンテンツの「再利用・流通」についての考えは？", "a": "一度使ったら終わり", "b": "なるべく使い回す", "c": "ひとつのコンテンツを複数形式で展開する", "d": "コンテンツエコシステムを設計して最大価値を生む"}, {"id": 137, "cat": "電子書籍・コンテンツ", "q": "「無料コンテンツ」と「有料コンテンツ」の線引きは？", "a": "全部無料で提供している", "b": "特に考えていない", "c": "無料で信頼、有料で深い価値を届けている", "d": "フリーミアムモデルを設計してファネルとして機能させている"}, {"id": 138, "cat": "電子書籍・コンテンツ", "q": "読者・視聴者のことをどう考えてコンテンツを作りますか？", "a": "自分が言いたいことを書く", "b": "役立てばいいと思っている", "c": "読者のペルソナと悩みを想定して作る", "d": "読者の変化と成果を設計してコンテンツを逆算する"}, {"id": 139, "cat": "電子書籍・コンテンツ", "q": "コンテンツのクオリティについて？", "a": "完璧でないと出せない", "b": "そこそこでよい", "c": "まず出して改善を繰り返す", "d": "MVP思考でリリース→フィードバック→改善を高速で回す"}, {"id": 140, "cat": "電子書籍・コンテンツ", "q": "コンテンツビジネスの将来性についてどう思いますか？", "a": "バブルだと思う", "b": "よくわからない", "c": "大きな可能性があると感じる", "d": "すでに実証されている収益モデルとして積極的に取り組んでいる"}, {"id": 141, "cat": "コーチング・教育", "q": "他者に教えることについてどう思いますか？", "a": "自分が完璧でないと教えられない", "b": "聞かれたら答える程度", "c": "積極的に伝えることで自分も成長できる", "d": "教えることを使命・仕事として取り組んでいる"}, {"id": 142, "cat": "コーチング・教育", "q": "コーチングやメンタリングを受けることについては？", "a": "お金の無駄", "b": "有名な人から学ぶならいいかも", "c": "費用対効果が高い自己投資", "d": "常に複数のメンターに投資している"}, {"id": 143, "cat": "コーチング・教育", "q": "「教育」に対する自分の使命感は？", "a": "特にない", "b": "少しある", "c": "人の成長を支援したいという気持ちがある", "d": "教育を通じて社会を変えたいという強い信念がある"}, {"id": 144, "cat": "コーチング・教育", "q": "オンライン講座やスクール運営について？", "a": "考えたことがない", "b": "やってみたいが難しそう", "c": "準備中または運営している", "d": "教育ビジネスを軸にした事業展開をしている"}, {"id": 145, "cat": "コーチング・教育", "q": "受講生・生徒の成果に対してどんな責任感を持ちますか？", "a": "本人次第", "b": "できる限りサポートしたい", "c": "成果にコミットして伴走する", "d": "受講生の変化と成果を設計してプログラムを改善し続ける"}, {"id": 146, "cat": "コーチング・教育", "q": "「わかりやすく伝える」スキルについては？", "a": "難しくて苦手", "b": "意識しているが自信はない", "c": "継続的に磨いているスキル", "d": "伝わることが価値だと確信して常に最適化している"}, {"id": 147, "cat": "コーチング・教育", "q": "学習コミュニティの運営・参加について？", "a": "一人で学ぶ方が好き", "b": "参加したいが機会がない", "c": "コミュニティの力を活かして学んでいる", "d": "コミュニティを設計・運営して集合知を生んでいる"}, {"id": 148, "cat": "コーチング・教育", "q": "「再現性のある教育」についてどう思いますか？", "a": "人それぞれで無理", "b": "できれば良いと思う", "c": "仕組み化・言語化に取り組んでいる", "d": "再現性のあるカリキュラムと方法論を構築している"}, {"id": 149, "cat": "コーチング・教育", "q": "生徒や受講生が成果を出したとき、どう感じますか？", "a": "それは本人の頑張り", "b": "嬉しい", "c": "自分の教え方の検証ができた", "d": "それが自分の使命の達成であると感じる"}, {"id": 150, "cat": "コーチング・教育", "q": "教育コンテンツの価格設定についてどう考えますか？", "a": "安くすべき", "b": "相場通りにする", "c": "提供価値と成果に見合った価格にする", "d": "価格を上げることで受講生の本気度と成果も上がると理解している"}, {"id": 151, "cat": "感情・モチベーション", "q": "モチベーションが下がったとき、どうしますか？", "a": "やる気が出るまで待つ", "b": "気分転換をして回復を待つ", "c": "モチベーションに頼らず仕組みで動く", "d": "感情の波の仕組みを理解して制御している"}, {"id": 152, "cat": "感情・モチベーション", "q": "「やる気」についてどう捉えていますか？", "a": "やる気がないと何もできない", "b": "大事だが波がある", "c": "行動がやる気を生むと理解している", "d": "やる気を設計できる自分なりのシステムがある"}, {"id": 153, "cat": "感情・モチベーション", "q": "感情的になったとき（怒り・悲しみ）どう対処しますか？", "a": "感情のままに行動する", "b": "しばらく落ち込む", "c": "感情を認識して冷静になってから動く", "d": "感情を情報として捉えて建設的に活用する"}, {"id": 154, "cat": "感情・モチベーション", "q": "「比べる」ことについてどう思いますか？", "a": "他人と比べて落ち込む", "b": "気にしないようにしている", "c": "過去の自分とだけ比べている", "d": "他者を参考にしながら自分軸で進んでいる"}, {"id": 155, "cat": "感情・モチベーション", "q": "嫌なことを先延ばしにする癖は？", "a": "かなりある", "b": "少しある", "c": "ほぼない", "d": "先延ばしをシステムで防ぐ仕組みがある"}, {"id": 156, "cat": "感情・モチベーション", "q": "「使命感」を感じる瞬間はありますか？", "a": "あまりない", "b": "たまにある", "c": "よくある", "d": "使命感がすべての行動の根底にある"}, {"id": 157, "cat": "感情・モチベーション", "q": "自分を褒めることはできますか？", "a": "できない", "b": "努力してできるようにしている", "c": "できる", "d": "自己肯定感を意図的に高める習慣がある"}, {"id": 158, "cat": "感情・モチベーション", "q": "批判や否定的な意見に対してどう対処しますか？", "a": "深く傷ついて引きずる", "b": "気にしないようにする", "c": "建設的なものは受け入れ流すものは流す", "d": "批判を情報として活用してビジネスを改善する"}, {"id": 159, "cat": "感情・モチベーション", "q": "「怖さ」を感じながら行動できますか？", "a": "怖いと動けない", "b": "怖いながら頑張れる", "c": "怖さをエネルギーに変えて動ける", "d": "怖さを感じることを成長のサインとして歓迎している"}, {"id": 160, "cat": "感情・モチベーション", "q": "「情熱」と「規律」どちらを大切にしますか？", "a": "情熱がないと動けない", "b": "情熱を大事にしている", "c": "規律と習慣で情熱を支えている", "d": "情熱と規律を統合してシステムとして機能させている"}, {"id": 161, "cat": "社会・トレンド", "q": "社会のトレンドに対してどんな姿勢ですか？", "a": "あまり興味がない", "b": "流れに乗るようにしている", "c": "先読みして準備している", "d": "トレンドを作る側にいる"}, {"id": 162, "cat": "社会・トレンド", "q": "社会問題（環境・格差等）についてどう行動しますか？", "a": "自分には無関係", "b": "気になるが何もしていない", "c": "自分のできる範囲で貢献している", "d": "事業や活動を通じて社会問題を解決しようとしている"}, {"id": 163, "cat": "社会・トレンド", "q": "グローバル化についてどう捉えていますか？", "a": "自分には関係ない", "b": "なんとなく意識している", "c": "グローバルな視点でビジネスを考えている", "d": "国境を越えた市場や仕組みを構築している"}, {"id": 164, "cat": "社会・トレンド", "q": "少子高齢化・人口減少について、ビジネスとしてどう考えますか？", "a": "不安要素でしかない", "b": "仕方ない", "c": "変化に適応した戦略を持っている", "d": "変化の中にある機会を捉えてビジネスを設計している"}, {"id": 165, "cat": "社会・トレンド", "q": "「副業・複業」の時代についてどう思いますか？", "a": "本業があるから不要", "b": "やってみたいが怖い", "c": "すでに副業・複業に取り組んでいる", "d": "複数の収益源を持つことが当然だと思っている"}, {"id": 166, "cat": "社会・トレンド", "q": "経済の不確実性（不景気・物価上昇等）への対処は？", "a": "どうにもならないと諦める", "b": "節約・貯金で対処する", "c": "スキルと収益の多角化で対応している", "d": "不確実性を前提とした強靭なビジネスを設計している"}, {"id": 167, "cat": "社会・トレンド", "q": "「働き方改革」についてどう思いますか？", "a": "会社が決めること", "b": "柔軟に働けるようになればいい", "c": "自分の働き方は自分で設計している", "d": "働き方そのものを変革するモデルを実践・提案している"}, {"id": 168, "cat": "社会・トレンド", "q": "メタバース・Web3・NFTなど新技術についての姿勢は？", "a": "怪しいと思う", "b": "様子を見ている", "c": "学習・研究中", "d": "ビジネス活用の可能性を探って実験している"}, {"id": 169, "cat": "社会・トレンド", "q": "「個人の時代」について、どう捉えていますか？", "a": "不安", "b": "なんとなく感じている", "c": "個人ブランドを積極的に構築している", "d": "個人が組織を超える価値を生む時代を体現している"}, {"id": 170, "cat": "社会・トレンド", "q": "社会に対して自分が果たせる役割は？", "a": "特にないと思う", "b": "小さいながらも貢献したい", "c": "明確な役割意識を持って行動している", "d": "自分の存在が社会を変えると信じて動いている"}, {"id": 171, "cat": "美容室経営", "q": "美容室の集客について現在の取り組みは？", "a": "ホットペッパーに頼り切っている", "b": "SNSを少しやっている", "c": "複数のチャネルを戦略的に使い分けている", "d": "集客の仕組みを作って自動化できている"}, {"id": 172, "cat": "美容室経営", "q": "リピート率向上のために何をしていますか？", "a": "特に何もしていない", "b": "技術を高めることだけを考えている", "c": "フォローアップの仕組みを持っている", "d": "LTV視点でカスタマージャーニーを設計している"}, {"id": 173, "cat": "美容室経営", "q": "スタッフ教育についてどう取り組んでいますか？", "a": "見て覚えてもらう", "b": "技術指導はしている", "c": "接客・技術・マインドを体系的に教えている", "d": "自走するチームを作る仕組みを構築している"}, {"id": 174, "cat": "美容室経営", "q": "美容室のブランディングについては？", "a": "特に考えていない", "b": "お店の雰囲気を大事にしている", "c": "コンセプトと世界観を言語化している", "d": "ブランドを資産として積み上げる戦略がある"}, {"id": 175, "cat": "美容室経営", "q": "単価アップのための取り組みは？", "a": "安くして来やすくする", "b": "メニュー追加で対応", "c": "価値を伝えて高単価化を実現", "d": "ラグジュアリー化・プレミアム化の戦略がある"}, {"id": 176, "cat": "美容室経営", "q": "美容師としての専門知識の発信は？", "a": "していない", "b": "たまに投稿する", "c": "定期的に専門コンテンツを発信している", "d": "発信が集客・教育・収益につながる仕組みになっている"}, {"id": 177, "cat": "美容室経営", "q": "美容室のDX（デジタル化）についての取り組みは？", "a": "紙とアナログで十分", "b": "基本的なシステムは使っている", "c": "予約・顧客管理・分析をデジタル化している", "d": "データドリブンな経営判断ができている"}, {"id": 178, "cat": "美容室経営", "q": "お客様との関係構築についてどう取り組んでいますか？", "a": "技術で満足してもらえれば", "b": "話しやすい雰囲気を心がけている", "c": "一人ひとりのライフスタイルを把握している", "d": "お客様の人生に伴走するパートナー関係を構築している"}, {"id": 179, "cat": "美容室経営", "q": "美容室以外の収益源について？", "a": "美容室一本で十分", "b": "考えたことはある", "c": "物販や講習など複数の収益源がある", "d": "美容を軸にした複合ビジネスを展開している"}, {"id": 180, "cat": "美容室経営", "q": "美容業界の未来についてどう考えますか？", "a": "AIや技術の進化で消える業界", "b": "変化に対応すれば何とかなる", "c": "価値あるサービスは必ず残ると信じている", "d": "自分が業界の未来を作る側にいると思っている"}, {"id": 181, "cat": "総合・応用", "q": "「自由」とはどんな状態だと思いますか？", "a": "好きなことだけをする状態", "b": "縛られず自分のペースで生きること", "c": "時間・お金・場所の制約から解放された状態", "d": "自分が選んだ使命に向けて動ける状態"}, {"id": 182, "cat": "総合・応用", "q": "「成功」の定義はあなたにとって何ですか？", "a": "お金持ちになること", "b": "安定した生活を送ること", "c": "自分の目標を達成し続けること", "d": "自分の存在が世界に価値を生み出し続けること"}, {"id": 183, "cat": "総合・応用", "q": "人生を振り返ったとき、後悔しないために今何をしますか？", "a": "楽しいことをする", "b": "とにかく頑張る", "c": "大切にしたい価値観に沿った選択をする", "d": "後悔のない人生を逆算設計して日々を生きる"}, {"id": 184, "cat": "総合・応用", "q": "「与える人」と「もらう人」どちらに近いですか？", "a": "できればもらいたい", "b": "バランスよくありたい", "c": "先に与えることを意識している", "d": "与えることが自分の喜びであり戦略でもある"}, {"id": 185, "cat": "総合・応用", "q": "今の自分に最も足りないものは何だと思いますか？", "a": "お金", "b": "時間", "c": "行動力", "d": "仕組みと設計"}, {"id": 186, "cat": "総合・応用", "q": "あなたの「強み」についてどれだけ理解していますか？", "a": "よくわからない", "b": "なんとなくある", "c": "言語化・活用できている", "d": "強みをビジネスの差別化軸にしている"}, {"id": 187, "cat": "総合・応用", "q": "周りの人に影響を与えていると感じますか？", "a": "あまり感じない", "b": "少し感じる", "c": "よく感じる", "d": "意図的に影響を設計している"}, {"id": 188, "cat": "総合・応用", "q": "「普通でいること」についてどう感じますか？", "a": "安心する", "b": "少し物足りない", "c": "もっと突き抜けたい", "d": "普通を疑うことが成長の入口だと確信している"}, {"id": 189, "cat": "総合・応用", "q": "今この瞬間から何か変えるとしたら？", "a": "特に変えたくない", "b": "何かを変えたいが何かわからない", "c": "具体的に変えたいことがある", "d": "すでに変化の渦中にいて進み続けている"}, {"id": 190, "cat": "総合・応用", "q": "あなたの人生のテーマや哲学は？", "a": "特にない", "b": "なんとなくある", "c": "言語化できている", "d": "哲学を軸にビジネス・人生・発信を設計している"}, {"id": 191, "cat": "総合・応用2", "q": "「消費者思考」と聞いて、自分に当てはまると思いますか？", "a": "かなり当てはまる", "b": "少し当てはまる", "c": "あまり当てはまらない", "d": "全く当てはまらない"}, {"id": 192, "cat": "総合・応用2", "q": "「生産者思考」を身につけるために何かしていますか？", "a": "何もしていない", "b": "意識するようにしている", "c": "具体的な行動をとっている", "d": "生産者思考は既に習慣化している"}, {"id": 193, "cat": "総合・応用2", "q": "あなたのビジネス（または人生）を一言で表すと？", "a": "まだわからない", "b": "なんとかやっている", "c": "成長している", "d": "価値を生み出し続けている"}, {"id": 194, "cat": "総合・応用2", "q": "今すぐ行動できる人ですか？", "a": "考えてから動く", "b": "準備ができたら動く", "c": "8割でも動く", "d": "まず動いて考える"}, {"id": 195, "cat": "総合・応用2", "q": "「自分への期待値」はどれくらいですか？", "a": "低め", "b": "現実的な範囲", "c": "高め", "d": "自分の可能性に上限を設けていない"}, {"id": 196, "cat": "総合・応用2", "q": "あなたが誰かに与えられる最大の価値は？", "a": "よくわからない", "b": "優しさや気遣い", "c": "専門知識やスキル", "d": "その人の人生を変えるきっかけ"}, {"id": 197, "cat": "総合・応用2", "q": "「挑戦」という言葉にどんな感情を感じますか？", "a": "怖い", "b": "ドキドキする", "c": "ワクワクする", "d": "当然のことで特別な感情はない"}, {"id": 198, "cat": "総合・応用2", "q": "今日から3ヶ月後、どんな自分になっていたいですか？", "a": "特に考えていない", "b": "今より少し良くなっていたい", "c": "具体的な目標がある", "d": "すでに逆算した行動計画の途中にいる"}, {"id": 199, "cat": "総合・応用2", "q": "「本当にやりたいこと」に今どれだけ近づいていますか？", "a": "全く近づけていない", "b": "少し近づいている", "c": "かなり近づいている", "d": "すでにやりたいことをやっている"}, {"id": 200, "cat": "総合・応用2", "q": "この診断を受けて、あなたは何を思いましたか？", "a": "自分は消費者思考だと気づいた", "b": "バランスを取りながら変わりたい", "c": "生産者思考をもっと強化したい", "d": "生産者思考を広めて周りも変えたい"}];
 
-  // --- お金・収入 ---
-  { text:"欲しいものがあるけどお金が足りない。あなたの行動は？", a:"節約してお金を貯めるか、後回しにする。", b:"そのお金を稼げる方法・売れるものを考え始める。" },
-  { text:"給料日前に残高が少ないと気づいたとき？", a:"今月は節約しよう、と支出を減らす方向で考える。", b:"今すぐ稼げることは何か、を先に考える。" },
-  { text:"副業について考えたとき、最初に浮かぶのは？", a:"何か楽で稼げるものはないかな、と探す。", b:"自分が持つスキルや知識で誰かの役に立てないか考える。" },
-  { text:"お金の使い方として正しいと思うのは？", a:"今を楽しむための消費にお金を使う。", b:"将来の収入を生むための投資にお金を使う。" },
-  { text:"誰かが高収入を得ていると聞いたとき？", a:"羨ましいな、と思う。", b:"どんな仕組みで稼いでいるのか分析したくなる。" },
-  { text:"クレジットカードのポイントが貯まったとき？", a:"お得に買い物に使う。", b:"このポイント経済圏の仕組みを考えてみる。" },
-  { text:"宝くじや懸賞に当たったら何をする？", a:"欲しかったものを買う・旅行に行く。", b:"事業やスキルアップへの投資に使う。" },
-  { text:"投資について聞かれたら？", a:"怖い・難しいのでとりあえず貯金している。", b:"自己投資・事業投資を優先しながら資産形成も考える。" },
-  { text:"「お金は働かせるもの」という言葉を聞いて？", a:"そうは言っても難しい、と感じる。", b:"自分のビジネスや仕組みをどう作るか考えるきっかけになる。" },
-  { text:"フリマアプリを見たとき？", a:"安く買えるものを探す。", b:"何が売れているか・どう価格をつけるか観察する。" },
-
-  // --- ビジネス・仕事 ---
-  { text:"SNSで誰かのビジネスが「うまくいってる」のを見たとき？", a:"いいな〜。自分にはそんな才能ないし。", b:"どんな仕組みで回してるんだろう？参考にしてみよう。" },
-  { text:"誰かに「これ、どうしたらいいですか？」と相談されたとき？", a:"わからないし、自分の意見を言うのは責任が重い。", b:"知ってることは全部伝える。教えることで自分も整理される。" },
-  { text:"仕事でミスをしてしまったとき？", a:"落ち込んで、しばらく引きずる。", b:"原因を分析して、仕組みで防ぐ方法を考える。" },
-  { text:"「起業したい」と言われたとき？", a:"リスクがあるから慎重に、とアドバイスする。", b:"まず小さくスタートする方法を一緒に考える。" },
-  { text:"仕事の効率化ツールを見つけたとき？", a:"便利！使ってみたい、と思う。", b:"これを使ってどんな価値が生み出せるか考える。" },
-  { text:"会議で新しいアイデアが必要になったとき？", a:"他の人の意見をまとめて整理する。", b:"自分から積極的にアイデアを出す。" },
-  { text:"スキルアップのためにセミナーに行くとき？", a:"良い話が聞けたら満足する。", b:"学んだことをすぐに誰かに教えるか、仕事に応用する。" },
-  { text:"新しいプロジェクトを任されたとき？", a:"指示に従って進める。", b:"自分でゴールから逆算してプランを立てる。" },
-  { text:"競合他社の商品やサービスを見たとき？", a:"へー、こんなのあるんだ、と思う。", b:"差別化ポイントと自分の強みを比較する。" },
-  { text:"クレームや批判を受けたとき？", a:"落ち込んで、できれば避けたいと思う。", b:"改善のヒントとして受け止め、すぐに対処策を考える。" },
-
-  // --- 学び・インプット ---
-  { text:"好きなジャンルの本・コンテンツを大量に消費している自分に気づいた。", a:"もっと良いコンテンツを探す。インプットが大事だから。", b:"いい加減、自分でも何かアウトプットしなければと感じる。" },
-  { text:"勉強会やセミナーに参加するとき、目的は？", a:"良い話を聞いてモチベーションを上げたい。", b:"即使えるネタを持ち帰り、すぐ実践する。" },
-  { text:"YouTubeで学習動画を観るとき？", a:"気になるものを次々と再生する。", b:"1本観たら必ず何か行動に移す。" },
-  { text:"資格を取ることについて考えたとき？", a:"資格があれば自信がつくし、安心できる。", b:"資格より実績と経験の方が大事だと思う。" },
-  { text:"読んだ本の内容を忘れてしまったとき？", a:"仕方ない、また読もうと思う。", b:"アウトプットしていなかったからだ、と反省する。" },
-  { text:"「学ぶ」ことの目的は？", a:"知識を増やして、教養を深めること。", b:"行動を変えて、結果を変えること。" },
-  { text:"オンライン講座を購入したとき？", a:"良い講座が見つかった！と満足する。", b:"すぐに受講して、どう使うか計画を立てる。" },
-  { text:"新しい言語やスキルを学ぶとき？", a:"楽しいからとりあえず続ける。", b:"何のために使うか目的を先に決める。" },
-  { text:"知らないことを聞かれたとき？", a:"「わからない」と答えてその場を終わらせる。", b:"「すぐ調べます」と言って学ぶきっかけにする。" },
-  { text:"情報収集に使う時間について？", a:"もっと多くの情報をインプットしたい。", b:"インプットよりアウトプットの時間を増やしたい。" },
-
-  // --- 時間・習慣 ---
-  { text:"あなたにとって「時間」の感覚に近いのは？", a:"時間は有限。上手に使って楽しみたい。", b:"時間は資産。何かを生み出すために投資するもの。" },
-  { text:"朝起きて最初にすることは？", a:"スマホを開いてSNSやニュースをチェックする。", b:"今日やることを確認し、最重要タスクから始める。" },
-  { text:"スキマ時間ができたとき？", a:"SNSを見たり動画を観て休憩する。", b:"アイデアを書き留めたり、小さな仕事を進める。" },
-  { text:"休日の過ごし方は？", a:"好きなことをして思いっきりリフレッシュする。", b:"平日できないことを進めつつ、リフレッシュもする。" },
-  { text:"「忙しい」と感じたとき？", a:"やることが多すぎて大変だ、と感じる。", b:"何を捨てて何に集中すべきか整理する。" },
-  { text:"1日の終わりに振り返ること？", a:"今日も疲れた、ゆっくり休もう。", b:"今日の成果と明日の優先順位を確認する。" },
-  { text:"習慣化について考えるとき？", a:"続けるのは難しい、意志が弱いから。", b:"仕組みと環境で続けられるように設計する。" },
-  { text:"締め切りに追われているとき？", a:"とにかく終わらせることに集中する。", b:"なぜこうなったかを考えて次に活かす。" },
-  { text:"「もっと時間があれば」と思うことがある？", a:"あれば○○したいのに、と思う。", b:"時間があっても行動しない自分を変える方が先、と思う。" },
-  { text:"夜更かしをしてしまったとき？", a:"もったいないことをした、と後悔する。", b:"何の時間に使ったかを見直し、優先度を再設定する。" },
-
-  // --- SNS・発信 ---
-  { text:"流行りのサービスや商品を見たとき？", a:"面白そう！使ってみたい、体験してみたい。", b:"なぜ流行ってる？ビジネスモデルはどうなってる？" },
-  { text:"SNSを見るとき、主な目的は？", a:"楽しい投稿や情報を見てリフレッシュする。", b:"発信ネタ探しや競合調査も兼ねている。" },
-  { text:"フォロワーが多い人を見たとき？", a:"すごいな、羨ましいな、と思う。", b:"どんなコンテンツ戦略で伸ばしたのか分析する。" },
-  { text:"自分が発信することについて？", a:"怖い・恥ずかしい、誰も見ていないかも。", b:"発信し続ければ必ず誰かの役に立てると思う。" },
-  { text:"バズっている投稿を見たとき？", a:"面白いな、と反応してシェアする。", b:"なぜバズったのか構造を分解する。" },
-  { text:"SNSでネガティブなコメントをもらったとき？", a:"落ち込んで、投稿を控えようと思う。", b:"改善できる点があれば活かし、気にしすぎず続ける。" },
-  { text:"ブログや発信を始めたいと思ったとき？", a:"まず完璧な記事を書いてから公開しようと思う。", b:"まず投稿してみて、改善しながら続ける。" },
-  { text:"自分のアカウントのフォロワーが増えないとき？", a:"向いていないのかも、と落ち込む。", b:"コンテンツ・ターゲット・発信頻度を見直す。" },
-  { text:"他人の成功体験を読んだとき？", a:"いいな、自分とは違うな、と思う。", b:"自分に応用できるエッセンスを探す。" },
-  { text:"「発信してみて」と言われたとき？", a:"何を発信すればいいかわからない、と悩む。", b:"まず得意なことや経験から発信できることを書き出す。" },
-
-  // --- 人間関係・コミュニティ ---
-  { text:"尊敬できる人に会ったとき？", a:"すごいな、と感動して話を聞く。", b:"どうしたらこの人のようになれるか聞いてみる。" },
-  { text:"コミュニティや勉強会に参加するとき？", a:"良い出会いがあれば嬉しい、と思う。", b:"自分も何か提供できることを考えて参加する。" },
-  { text:"誰かに感謝されたとき？", a:"嬉しい、またやろう、と思う。", b:"これをもっと多くの人に届けるにはどうすればいいか考える。" },
-  { text:"友人が悩んでいるとき？", a:"話を聞いて共感する。", b:"一緒に解決策を考えたり、具体的な行動を提案する。" },
-  { text:"初対面の人と話すとき？", a:"相手のことを知ろうとする。", b:"自分が提供できる価値と相手のニーズを探る。" },
-  { text:"メンターや師匠を見つけたとき？", a:"この人の話をたくさん聞きたい！と思う。", b:"何を学び・実践して、どう恩返しするかを考える。" },
-  { text:"チームで働くとき？", a:"自分の役割をこなすことに集中する。", b:"チーム全体の成果を最大化するために動く。" },
-  { text:"誰かに批判されたとき？", a:"傷ついて、その人との関わりを避けたくなる。", b:"正しい批判は受け入れ、改善につなげる。" },
-  { text:"ネットワークを広げることについて？", a:"良い人と自然に出会えればいい、と思う。", b:"意図的に価値ある繋がりを作る努力をする。" },
-  { text:"人に教えることについて？", a:"自分が完璧に理解してから教えたい。", b:"教えることで自分の理解が深まると知っている。" },
-
-  // --- マインドセット・価値観 ---
-  { text:"自分の不満や悩みを感じたとき？", a:"誰かが解決してくれるものを探す。", b:"同じ悩みを持つ人がいるはず。解決策を自分で作れないか考える。" },
-  { text:"「好きなことで稼ぐ」という言葉を聞いて？", a:"憧れるけど、才能ある人だけが実現できること。", b:"好きなことを価値に変える方法論の問題。設計できる。" },
-  { text:"失敗したとき、最初に思うことは？", a:"なんで失敗したんだろう、恥ずかしい。", b:"何が原因で、次はどうすれば成功できるか。" },
-  { text:"「リスクを取る」ことについて？", a:"できれば避けたい。安全・安心が一番。", b:"リスクを計算してコントロールしながら進む。" },
-  { text:"「才能」についての考えは？", a:"才能がある人とない人がいる、自分は後者かも。", b:"才能より仕組みと継続が結果を決めると思う。" },
-  { text:"「正解」を求めるとき？", a:"誰かに正解を教えてもらいたい。", b:"まず動いて、自分で正解を作り出す。" },
-  { text:"変化への対応について？", a:"変化は不安。できれば現状を維持したい。", b:"変化はチャンス。いち早く適応して先を行く。" },
-  { text:"「完璧」と「スピード」どちらを選ぶ？", a:"完璧にしてから出したい。", b:"まず出して改善する、の繰り返しの方が良い。" },
-  { text:"「センス」についての考えは？", a:"センスは生まれ持ったもの。", b:"センスは観察・分析・実践で磨けるもの。" },
-  { text:"自由とは何だと思う？", a:"好きなことができること。制限がない状態。", b:"選択肢を自分で作れる力を持っていること。" },
-
-  // --- 将来・目標 ---
-  { text:"1年後の自分に最も近いイメージは？", a:"今より生活が豊かになって、好きなものに囲まれている。", b:"今より多くの人に価値を届けられるものを持っている。" },
-  { text:"目標を立てるとき？", a:"達成できそうな現実的な目標を立てる。", b:"少し高すぎるくらいの目標を立て、逆算する。" },
-  { text:"将来への不安を感じたとき？", a:"何か安定したものにしがみつきたくなる。", b:"不安を解消できるスキルや実績を積もうと動く。" },
-  { text:"「5年後どうなりたいか」という問いに？", a:"まだ決まっていない、その時に考える。", b:"具体的なビジョンがあり、今の行動との繋がりも見えている。" },
-  { text:"夢や理想について話されたとき？", a:"素敵だけど現実は難しい、と思う。", b:"どうすれば実現できるか、ステップを考え始める。" },
-  { text:"人生の転機だと感じたとき？", a:"流れに任せて、様子を見る。", b:"意識的に動いて、転機を最大限活かす。" },
-  { text:"「もし何でもできるとしたら？」と聞かれたとき？", a:"旅行したい・休みたい・買い物したい。", b:"作りたいサービスや届けたい価値がすぐ浮かぶ。" },
-  { text:"キャリアを考えるとき？", a:"安定・福利厚生・会社の信頼度を重視する。", b:"自分の成長と自律性を最優先に考える。" },
-  { text:"老後について？", a:"老後のためにしっかり貯蓄したい。", b:"老後まで価値を生み出せる自分でいたい。" },
-  { text:"「今が幸せか？」と聞かれたとき？", a:"今この瞬間を大切に楽しんでいる。", b:"今は種まき中。未来の自分への投資をしている。" },
-
-  // --- ビジネス発展・マーケティング ---
-  { text:"「集客」について考えるとき？", a:"広告をうまく使えれば集まるはず。", b:"価値を届け続ければ自然と集まる仕組みを作る。" },
-  { text:"商品・サービスの価格設定をするとき？", a:"周りの相場に合わせて決める。", b:"提供する価値から逆算して価格を決める。" },
-  { text:"「売れない」と感じたとき？", a:"向いていないのかも、と落ち込む。", b:"誰に・何を・どう伝えるかを見直す。" },
-  { text:"お客さんからフィードバックをもらったとき？", a:"良い感想は嬉しく、悪い感想は落ち込む。", b:"どちらも次の改善材料として活用する。" },
-  { text:"新しいビジネスのアイデアが浮かんだとき？", a:"面白いな、と思いつつ実行はしない。", b:"まず小さく実験できないか考える。" },
-  { text:"人気コンテンツや商品を分析するとき？", a:"「なんか流行ってるな」で終わる。", b:"「なぜ売れるのか」構造を分解する。" },
-  { text:"顧客の悩みを聞いたとき？", a:"共感して「大変だね」と声をかける。", b:"その悩みを解決できる商品やサービスが作れないか考える。" },
-  { text:"マーケティングを学ぶとき？", a:"理論を理解することに時間をかける。", b:"すぐ自分のビジネスで試して検証する。" },
-  { text:"競合が多いジャンルに参入するとき？", a:"競合が多いから難しい、と諦める。", b:"ニッチな差別化ポイントを見つけて切り込む。" },
-  { text:"「ブランディング」という言葉を聞いて？", a:"難しそう、デザインのことかな。", b:"誰に・何者として・どう認識されたいかの設計だと思う。" },
-
-  // --- 創造・表現 ---
-  { text:"何かを「作る」ことについて？", a:"センスがないから難しい、と思う。", b:"作り続けることでセンスが育つ、と思う。" },
-  { text:"文章を書くことについて？", a:"うまく書けないから苦手、と避ける。", b:"書くことは思考の整理であり、発信の基本だと思う。" },
-  { text:"デザインやビジュアルについて？", a:"プロに任せた方がいい。", b:"基本は自分で学び、必要なときだけ外注する。" },
-  { text:"「オリジナリティ」とは？", a:"生まれ持った個性や才能のこと。", b:"既存のものの組み合わせ方・見せ方・伝え方の工夫。" },
-  { text:"アイデアが出ないとき？", a:"インスピレーションが来るのを待つ。", b:"量を出すことでアイデアが生まれることを知っている。" },
-  { text:"他人の作品を見たとき？", a:"すごいな、と感動して楽しむ。", b:"どんな意図・技術・工夫があるか読み解く。" },
-  { text:"「不完全なものを公開する」ことについて？", a:"完成してからじゃないと恥ずかしい。", b:"不完全でも出してフィードバックをもらう方が早く成長できる。" },
-  { text:"クリエイティブな仕事をする人を見て？", a:"才能があっていいな、と思う。", b:"自分も何かを作って届けたい、と思う。" },
-  { text:"写真・動画・文章のどれを使う？", a:"得意なもの一つだけで発信する。", b:"それぞれの媒体の特性を活かして使い分ける。" },
-  { text:"「発信が怖い」と感じたとき？", a:"やっぱり向いていないのかも、と思う。", b:"全員に届ける必要はない、1人に届けばいい、と思う。" },
-
-  // --- テクノロジー・AI ---
-  { text:"AIツールを知ったとき？", a:"便利そう！使ってみたい、と思う。", b:"これをどう自分のビジネスや発信に組み込めるか考える。" },
-  { text:"新しいテクノロジーが出たとき？", a:"難しそう、詳しい人に聞けばいい。", b:"早めにキャッチして自分で試す。" },
-  { text:"SNSのアルゴリズムが変わったとき？", a:"また変わった、使いにくい、と思う。", b:"新しいルールを理解して、戦略を更新する。" },
-  { text:"AIが仕事を奪うと聞いたとき？", a:"怖い、自分の仕事は大丈夫かな。", b:"AIを使いこなす側になればいい、と前向きに考える。" },
-  { text:"プログラミングやデジタルスキルについて？", a:"必要性は感じるが、難しくて手が出ない。", b:"少しずつでも学び、自分のツールとして使う。" },
-  { text:"情報が溢れすぎていると感じたとき？", a:"何を信じればいいかわからない。", b:"自分で判断できる軸を持つことが重要だと思う。" },
-  { text:"オンラインで稼ぐ方法を知ったとき？", a:"うさんくさそう、詐欺かも、と思う。", b:"仕組みを理解して、合法で価値あるものを選ぶ。" },
-  { text:"デジタルコンテンツ（電子書籍・動画講座等）を見たとき？", a:"買って使う立場で考える。", b:"自分も作れないか考える。" },
-  { text:"ライブ配信やウェビナーについて？", a:"見る側として楽しみたい。", b:"やる側として価値を届けたい。" },
-  { text:"ChatGPTなどのAIを使うとき？", a:"便利に使って作業を楽にする。", b:"AIと組み合わせて自分ならではの価値を作る。" },
-
-  // --- 美容・健康・ライフスタイル ---
-  { text:"スキンケアや美容に関心を持ったとき？", a:"良い商品を探して試す。", b:"成分・効果・ビジネスの仕組みも気になる。" },
-  { text:"健康習慣を始めたとき？", a:"続けて自分が健康になることを目標にする。", b:"続けながら、他の人にも伝えたいと思う。" },
-  { text:"「美と健康」に関わる情報を見たとき？", a:"自分に使えることを選んで取り入れる。", b:"これをどう事業・発信につなげるか考える。" },
-  { text:"お気に入りの美容師ができたとき？", a:"ずっとその人に担当してもらいたい。", b:"何がそんなに信頼されるのか、プロとしての秘訣を学びたい。" },
-  { text:"食事や栄養について学んだとき？", a:"自分の食生活に取り入れる。", b:"これをコンテンツや商品として発信できないか考える。" },
-  { text:"ウェルネスやセルフケアのブームを見て？", a:"自分にも合うものを試したい。", b:"このニーズに応えるサービスを作れないか考える。" },
-  { text:"サロンや美容室に通うとき？", a:"癒しやキレイになることを楽しむ。", b:"スタッフの接客・空間・仕組みを観察する。" },
-  { text:"ヘルスケアアプリを使うとき？", a:"自分の記録をつけて健康管理する。", b:"このアプリのUI・収益モデル・継続設計を分析する。" },
-  { text:"美容系インフルエンサーを見たとき？", a:"参考にして商品を買う。", b:"どうやって信頼を築いているか研究する。" },
-  { text:"「美しさ」について考えるとき？", a:"外見を磨いて自信を持ちたい。", b:"内側から出る美しさを、言葉や仕事でも表現したい。" },
-
-  // --- 電子書籍・コンテンツビジネス ---
-  { text:"電子書籍を見たとき？", a:"良さそうなものを読みたい、と購入を検討する。", b:"自分も書けないか考え、どんな内容が売れるか調べる。" },
-  { text:"誰かが出版した本を見たとき？", a:"読んでみたい、と思う。", b:"自分も出版してみたい、どうすればいい？と考える。" },
-  { text:"知識を体系化することについて？", a:"まだまだ知識が足りないから難しい。", b:"今持っている知識でも体系化して伝えられる、と思う。" },
-  { text:"コンテンツを作ることに対して？", a:"センスや才能がないと難しい。", b:"誰でも経験や悩みをコンテンツにできる。" },
-  { text:"「誰かの役に立つ情報を発信する」ことについて？", a:"特別な専門知識がないと難しい。", b:"自分の経験や失敗談も、誰かの役に立てる。" },
-  { text:"メルマガやニュースレターについて？", a:"良いものを読んでインプットする。", b:"自分も読者に価値を届けるために発行したい。" },
-  { text:"「自分の経験を本にまとめる」と言われたら？", a:"そんな大したことないよ、と謙遜する。", b:"どんな人の役に立てるか、構成を考えてみる。" },
-  { text:"有料コンテンツを買うとき？", a:"安くてお得なものを探す。", b:"価値が高ければ多少高くても買う。自分が売る参考にもなる。" },
-  { text:"「あなたの強みは何ですか？」と聞かれたとき？", a:"特にないかな、と答える。", b:"経験・スキル・視点を整理して答えられる。" },
-  { text:"情報発信で収益化することについて？", a:"なんか怪しい・難しいと思う。", b:"価値を提供すれば対価をもらうのは当然だと思う。" },
-
-  // --- コーチング・教育 ---
-  { text:"AIスクールや習い事に通うとき？", a:"先生に教えてもらいながらスキルを身につけたい。", b:"学んだことをすぐ実践して、教える側にもなりたい。" },
-  { text:"誰かを教えるポジションに立ったとき？", a:"自分が完璧でないと教えられない、と思う。", b:"一歩先を行けば教えられる、一緒に成長できる。" },
-  { text:"「先生・講師」という肩書きについて？", a:"資格や実績がないと名乗れないもの。", b:"知識を持ちアウトプットし始めた瞬間から名乗れるもの。" },
-  { text:"教育コンテンツを見るとき？", a:"自分が学ぶために使う。", b:"どんな教え方・構成・価格設定か研究する。" },
-  { text:"「コーチング」を受けたとき？", a:"良い話を聞いて満足する。", b:"コーチングの技術・質問の仕方を自分でも学ぼうとする。" },
-  { text:"受講生から「わかりました！」と言われたとき？", a:"教えられてよかった、と満足する。", b:"次はどうすれば行動変容まで導けるか考える。" },
-  { text:"カリキュラムを組むとき？", a:"詰め込めるだけ詰め込もうとする。", b:"受講生の成果から逆算して必要なものだけ入れる。" },
-  { text:"自分の講座に申し込みが来ないとき？", a:"自分には無理だったのかな、と諦める。", b:"誰に・何を・どう伝えるかを見直す。" },
-  { text:"他の講師の講座を受けたとき？", a:"内容を吸収して自分のスキルにする。", b:"構成・演出・サポート体制をすべて研究する。" },
-  { text:"「教えるのが怖い」と感じたとき？", a:"もっと準備してから始めよう、と後回しにする。", b:"まず1人に教えることから始めてみる。" },
-
-  // --- 感情・モチベーション ---
-  { text:"モチベーションが上がらないとき？", a:"やる気が戻るまで待つ。", b:"やる気は行動の後についてくる、と知っているのでまず動く。" },
-  { text:"「自分には無理かも」と感じたとき？", a:"やっぱり向いていないんだ、と思う。", b:"無理だと感じるのは成長している証拠だと捉える。" },
-  { text:"うまくいっている人を見て羨ましくなったとき？", a:"自分はダメだな、と落ち込む。", b:"この気持ちをエネルギーに変えて行動する。" },
-  { text:"「自信がない」と感じたとき？", a:"自信がつくまで待って行動する。", b:"行動して実績を積むことで自信はつく、とわかっている。" },
-  { text:"褒められたとき？", a:"嬉しい！もっと褒めてもらいたい。", b:"嬉しい！次はこの価値をもっと大きく届けよう。" },
-  { text:"なんとなく不満を感じているとき？", a:"誰かに話してスッキリする。", b:"その不満の根本原因を探り、環境や仕組みを変える。" },
-  { text:"感情的になりやすい場面で？", a:"感情のまま反応してしまう。", b:"感情に気づきつつ、建設的な行動を選ぶ。" },
-  { text:"「なんかやる気が出ない日」は？", a:"その日は諦めて休む。", b:"スモールアクションで勢いをつける。" },
-  { text:"「いつか本気でやろう」と思うことがある？", a:"いつか条件が揃ったら始めようと思っている。", b:"「いつか」は来ない、今日から小さく始める、と思っている。" },
-  { text:"困難な状況に直面したとき？", a:"早くこの状況が終わればいい、と願う。", b:"この経験から何を学べるか、どう活かせるかを考える。" },
-
-  // --- 社会・トレンド ---
-  { text:"社会問題を知ったとき？", a:"大変だな、誰かが解決してほしいな。", b:"自分のビジネスや発信でこの問題に関われないか考える。" },
-  { text:"業界のトレンドを知ったとき？", a:"ふーん、そういう流れなんだ。", b:"このトレンドを先取りして何ができるか考える。" },
-  { text:"政策や制度の変化を知ったとき？", a:"自分の生活への影響を心配する。", b:"この変化でビジネスチャンスが生まれないか考える。" },
-  { text:"新しい職業・働き方を知ったとき？", a:"面白い選択肢があるな、と思う。", b:"自分もその方向にシフトできないか検討する。" },
-  { text:"「働き方改革」について考えるとき？", a:"もっと休める社会になってほしい。", b:"自分でコントロールできる働き方を設計したい。" },
-  { text:"経済格差について考えるとき？", a:"政府や社会がなんとかすべき問題だと思う。", b:"個人が価値を生み出す力を持つことが根本解決だと思う。" },
-  { text:"人口減少・市場縮小のニュースを見たとき？", a:"不安だな、影響が出そうだな。", b:"どの市場が伸びているか、どこに動くべきか考える。" },
-  { text:"地域活性化のニュースを見たとき？", a:"地元が盛り上がるといいな、と思う。", b:"自分が何か貢献できないか考える。" },
-  { text:"「個人が活躍する時代」と聞いて？", a:"才能ある一部の人の話だと思う。", b:"自分にも可能性がある時代だと感じる。" },
-  { text:"SDGsや社会貢献活動を見たとき？", a:"良いことをしているな、応援したい。", b:"自分のビジネスと社会貢献をどう繋げるか考える。" },
-
-  // --- 美容室経営特化 ---
-  { text:"サロンの売上が下がったとき？", a:"景気が悪いから仕方ない、と思う。", b:"価格・客層・サービス設計のどこを変えるか考える。" },
-  { text:"新しいヘアカラーの技術を学んだとき？", a:"お客様に喜んでもらえる、と嬉しくなる。", b:"この技術をどうやって集客や単価アップにつなげるか考える。" },
-  { text:"常連客が来なくなったとき？", a:"寂しいな、何かあったのかな。", b:"離脱の原因を分析して、リテンション施策を考える。" },
-  { text:"スタッフが定着しないとき？", a:"今の若い子は根性がない、と感じる。", b:"自分のマネジメントや職場環境に問題がないか見直す。" },
-  { text:"近くに競合サロンができたとき？", a:"お客様が取られそうで不安だ。", b:"差別化ポイントを明確にして、自分だけの価値を打ち出す。" },
-  { text:"お客様に「高い」と言われたとき？", a:"じゃあ少し値引きしようか、と思う。", b:"価値の伝え方が足りなかったと捉えて説明方法を改善する。" },
-  { text:"SNSでサロンを宣伝するとき？", a:"とにかく投稿を続けようとする。", b:"誰に・何を伝えるか戦略を立ててから発信する。" },
-  { text:"予約が埋まらない日があるとき？", a:"暇だな、しょうがない。", b:"その時間を使って仕組み改善・スキルアップに充てる。" },
-  { text:"お客様の要望が難しいとき？", a:"できない、と断ってしまう。", b:"できる方法を一緒に考えて、最善の提案をする。" },
-  { text:"サロン経営が軌道に乗ったとき？", a:"今のやり方を維持して安定させる。", b:"次のステップ（多店舗・オンライン・書籍等）を考える。" },
-];
-
-// ============================================================
-// ランダムに10問選ぶ
-// ============================================================
-function pickRandom(arr, n) {
-  const shuffled = [...arr].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, n);
-}
-
-const results = {
-  producer: {
-    label: "⚡ 生産者思考タイプ",
-    cls: "type-producer",
-    title: "⚡ あなたは「価値を創る人」の思考を持っています",
-    desc: "世界を「受け取る側」ではなく「提供する側」として見ています。日常の体験も、他者の成功も、自分の不満も——すべてをビジネスや創造の種として捉える視点が自然と備わっています。この思考を持つ人は、時代の変化を怖れるのではなく、変化の中にチャンスを見出します。",
-    advice: "あなたはすでに「作る側」の回路が動いています。あとは行動量と継続性だけです。完璧を求めず、まず小さくリリースすること。美容師・ライター・講師——どの役割でも、あなたの思考は最高の武器になります。今日、何か一つアウトプットしてみましょう。"
-  },
-  mixed: {
-    label: "✨ バランス思考タイプ",
-    cls: "type-mixed",
-    title: "✨ 消費と生産のバランスを持つ移行期タイプ",
-    desc: "消費者としての豊かな感性と、生産者としての芽生えた視点が共存しています。「いいな」と感じる感覚はすでに十分。あとはその感情を「どうしたら作れるか」「どうしたら届けられるか」という問いに変換するクセをつけるだけです。あなたは今、ちょうどシフトのタイミングにいます。",
-    advice: "消費者感性は才能です。「これが好き」という直感は、コンテンツや商品を作る最高のコンパスになります。インプットを続けながら、週1つでいいのでアウトプットする習慣を作りましょう。SNS投稿でも、ノートでも、誰かに教えることでも構いません。"
-  },
-  consumer: {
-    label: "🛒 消費者思考タイプ",
-    cls: "type-consumer",
-    title: "🛒 あなたは「受け取る側」の思考が強い状態です",
-    desc: "今のあなたは、世界を「楽しむ」「受け取る」視点で見ています。それ自体は悪いことではありません。豊かな感性を持ち、良いものを見抜く目がある。しかし「誰かが作ってくれたものを選ぶ」という姿勢が強い状態では、経済的・精神的な自由度は限られてしまいます。",
-    advice: "まず「これを自分が作るとしたら？」という問いを日常に持ち込むことから始めましょう。美容室でも、読んだ本でも、食べたご飯でも。消費した体験を「言語化・発信」するだけで、あなたは生産者への第一歩を踏み出せます。思考の習慣を少しずつ変えていきましょう。"
-  }
-};
-
-let current = 0;
+let selected = [];
 let answers = [];
-let sessionQuestions = [];
+let current = 0;
 
-function init() {
-  current = 0;
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  selected = shuffle(ALL_QUESTIONS).slice(0, 10);
   answers = new Array(10).fill(null);
-  sessionQuestions = pickRandom(ALL_QUESTIONS, 10);
-
-  const dotsEl = document.getElementById('dots');
-  dotsEl.innerHTML = '';
-  for (let i = 0; i < 10; i++) {
-    const d = document.createElement('div');
-    d.className = 'dot' + (i === 0 ? ' current' : '');
-    d.id = 'dot-' + i;
-    dotsEl.appendChild(d);
-  }
-  renderQuestion();
+  current = 0;
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('quizScreen').classList.remove('hidden');
+  renderQ();
 }
 
-function renderQuestion() {
-  const q = sessionQuestions[current];
-  const numStr = String(current + 1).padStart(2, '0');
-  document.getElementById('question-num').innerHTML = 'Q' + numStr + ' <span class="line"></span>';
-  document.getElementById('question-text').textContent = q.text;
-  document.getElementById('progress-text').textContent = `Q${current + 1} / 10`;
-  const pct = Math.round((current / 10) * 100);
-  document.getElementById('progress-pct').textContent = pct + '%';
-  document.getElementById('progress-fill').style.width = pct + '%';
+function renderQ() {
+  const q = selected[current];
+  document.getElementById('progressNum').textContent = (current + 1) + ' / 10';
+  document.getElementById('progressFill').style.width = ((current + 1) / 10 * 100) + '%';
+  document.getElementById('qCat').textContent = q.cat;
+  document.getElementById('qText').textContent = q.q;
 
-  const optionsEl = document.getElementById('options');
-  optionsEl.innerHTML = '';
+  const opts = [
+    {key:'a', score:0, text:q.a},
+    {key:'b', score:1, text:q.b},
+    {key:'c', score:2, text:q.c},
+    {key:'d', score:3, text:q.d},
+  ];
 
-  const aBtn = document.createElement('button');
-  aBtn.className = 'option-btn' + (answers[current] === 'a' ? ' selected-a' : '');
-  aBtn.innerHTML = `<span class="option-letter">A</span><span class="option-text">${q.a}</span>`;
-  aBtn.onclick = () => selectAnswer('a');
+  const container = document.getElementById('choices');
+  container.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn' + (answers[current] === opt.score ? ' selected' : '');
+    btn.innerHTML = '<span class="choice-label">' + opt.key.toUpperCase() + '</span><span>' + opt.text + '</span>';
+    btn.onclick = () => selectAnswer(opt.score);
+    container.appendChild(btn);
+  });
 
-  const bBtn = document.createElement('button');
-  bBtn.className = 'option-btn' + (answers[current] === 'b' ? ' selected-b' : '');
-  bBtn.innerHTML = `<span class="option-letter">B</span><span class="option-text">${q.b}</span>`;
-  bBtn.onclick = () => selectAnswer('b');
-
-  optionsEl.appendChild(aBtn);
-  optionsEl.appendChild(bBtn);
-
-  document.getElementById('next-btn').disabled = answers[current] === null;
-  document.getElementById('prev-btn').disabled = current === 0;
-  document.getElementById('next-btn').textContent = current === 9 ? '結果を見る ✦' : '次の質問へ →';
-
-  for (let i = 0; i < 10; i++) {
-    const d = document.getElementById('dot-' + i);
-    d.className = 'dot';
-    if (i < current) d.classList.add('answered');
-    else if (i === current) d.classList.add('current');
-  }
-
-  const card = document.getElementById('question-card');
-  card.style.animation = 'none';
-  card.offsetHeight;
-  card.style.animation = 'slideIn 0.35s ease';
+  document.getElementById('btnPrev').style.visibility = current === 0 ? 'hidden' : 'visible';
+  const btnNext = document.getElementById('btnNext');
+  btnNext.disabled = answers[current] === null;
+  btnNext.textContent = current === 9 ? '結果を見る ✨' : '次へ →';
 }
 
-function selectAnswer(choice) {
-  answers[current] = choice;
-  renderQuestion();
+function selectAnswer(score) {
+  answers[current] = score;
+  document.querySelectorAll('.choice-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === score);
+  });
+  document.getElementById('btnNext').disabled = false;
 }
 
-function nextQuestion() {
+function nextQ() {
   if (answers[current] === null) return;
   if (current === 9) { showResult(); return; }
   current++;
-  renderQuestion();
+  renderQ();
 }
 
-function prevQuestion() {
+function prevQ() {
   if (current === 0) return;
   current--;
-  renderQuestion();
+  renderQ();
 }
 
 function showResult() {
-  const producerCount = answers.filter(a => a === 'b').length;
-  const consumerCount = 10 - producerCount;
-  const score = producerCount;
+  const total = answers.reduce((s, v) => s + v, 0);
+  const max = 30;
+  const pct = Math.round(total / max * 100);
 
-  document.getElementById('quiz-section').style.display = 'none';
-  const rs = document.getElementById('result-section');
-  rs.classList.add('show');
-  window.scrollTo(0, 0);
+  const countA = answers.filter(v => v === 0).length;
+  const countB = answers.filter(v => v === 1).length;
+  const countC = answers.filter(v => v === 2).length;
+  const countD = answers.filter(v => v === 3).length;
 
-  const scoreEl = document.getElementById('score-num');
-  scoreEl.textContent = score;
+  let typeClass, typeBadge, typeTitle, typeEmoji, typeDesc, typeMsg;
 
-  let type;
-  if (score >= 7) type = 'producer';
-  else if (score >= 4) type = 'mixed';
-  else type = 'consumer';
+  if (total <= 8) {
+    typeClass = 'type-consumer';
+    typeBadge = '消費者思考タイプ';
+    typeTitle = '消費者思考タイプ';
+    typeEmoji = '🌱';
+    typeDesc = 'あなたは現在、受け取る・楽しむ・消費することが中心の思考パターンです。これは悪いことではありません。まずは自分の価値観や好きなことを知ることから生産者思考への扉が開きます。';
+    typeMsg = '小さな一歩が大きな変化を生みます。今日から一つだけ「生み出す」行動をしてみましょう。SNSに学びを投稿する、日記を書く、誰かに何かを教える——それが出発点です。';
+  } else if (total <= 15) {
+    typeClass = 'type-balance';
+    typeBadge = 'バランス思考タイプ';
+    typeTitle = 'バランス思考タイプ';
+    typeEmoji = '⚖️';
+    typeDesc = '消費と生産のバランスが取れているタイプです。学ぶことや楽しむことと、何かを作ることの間で揺れているかもしれません。あと一歩の意識の転換で大きく変われる段階です。';
+    typeMsg = '「インプットしたらアウトプット」を習慣にするだけで一気に変わります。学んだことを誰かに話す、SNSでシェアする——この小さな習慣があなたを生産者に近づけます。';
+  } else if (total <= 22) {
+    typeClass = 'type-semi';
+    typeBadge = '準生産者思考タイプ';
+    typeTitle = '準生産者思考タイプ';
+    typeEmoji = '🚀';
+    typeDesc = '生産者思考がかなり身についています！価値を生み出すことへの意識が高く、自分のビジネスや発信、学びに積極的です。あとは「仕組み化」と「継続」を磨けば、本物の生産者へ進化できます。';
+    typeMsg = '次のステップは「自動化」と「レバレッジ」です。自分が動かなくても価値が生まれる仕組みを一つ作ってみましょう。コンテンツ、SNS運用、コミュニティ設計——あなたならできます！';
+  } else {
+    typeClass = 'type-producer';
+    typeBadge = '生産者思考タイプ';
+    typeTitle = '生産者思考タイプ';
+    typeEmoji = '👑';
+    typeDesc = '真の生産者思考の持ち主です！価値を生み出すこと、仕組みを作ること、人に与えることが自然な行動パターンになっています。あなたの思考は周囲に影響を与え、社会を動かす力を持っています。';
+    typeMsg = '次のミッションは「再現性を高めること」と「影響範囲を広げること」です。あなたの思考をコンテンツ・講座・書籍・コミュニティとして世界に届けましょう。あなたの存在が誰かの人生を変えます。';
+  }
 
-  scoreEl.className = 'score-number ' + results[type].cls;
-  document.getElementById('c-count').textContent = consumerCount;
-  document.getElementById('p-count').textContent = producerCount;
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.remove('hidden');
+
+  document.getElementById('resultContent').className = 'result-screen ' + typeClass;
+  document.getElementById('resultContent').innerHTML = `
+    <div class="result-header">
+      <div class="result-type-badge">${typeBadge}</div>
+      <div class="result-title">${typeEmoji} ${typeTitle}</div>
+      <div class="result-subtitle">スコア ${total}点 / ${max}点満点（上位 ${pct}%）</div>
+    </div>
+
+    <div class="score-card">
+      <div class="score-display">${total}</div>
+      <div class="score-max">/ ${max}点</div>
+      <div class="gauge-wrap">
+        <div class="gauge-fill" id="gaugeFill" style="width:0%"></div>
+      </div>
+      <div class="score-breakdown">
+        <div class="breakdown-item"><div class="breakdown-label">A（消費）</div><div class="breakdown-val">${countA}</div></div>
+        <div class="breakdown-item"><div class="breakdown-label">B（やや消費）</div><div class="breakdown-val">${countB}</div></div>
+        <div class="breakdown-item"><div class="breakdown-label">C（やや生産）</div><div class="breakdown-val">${countC}</div></div>
+        <div class="breakdown-item"><div class="breakdown-label">D（生産）</div><div class="breakdown-val">${countD}</div></div>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <h3>📊 あなたの思考パターン</h3>
+      <p>${typeDesc}</p>
+    </div>
+
+    <div class="result-card">
+      <h3>💡 次のアクション</h3>
+      <p>${typeMsg}</p>
+    </div>
+
+    <button class="btn-retry" onclick="retryQuiz()">🔄 もう一度診断する（別の問題で）</button>
+  `;
 
   setTimeout(() => {
-    document.getElementById('gauge-fill').style.width = (score * 10) + '%';
+    const gf = document.getElementById('gaugeFill');
+    if (gf) gf.style.width = pct + '%';
   }, 100);
-
-  const r = results[type];
-  const badge = document.getElementById('type-badge');
-  badge.textContent = r.label;
-  badge.className = 'type-badge ' + r.cls;
-
-  document.getElementById('result-title').textContent = r.title;
-  document.getElementById('result-desc').textContent = r.desc;
-  document.getElementById('result-advice').textContent = r.advice;
 }
 
-function resetQuiz() {
-  document.getElementById('quiz-section').style.display = 'block';
-  document.getElementById('result-section').classList.remove('show');
-  document.getElementById('gauge-fill').style.width = '0%';
-  window.scrollTo(0, 0);
-  init();
+function retryQuiz() {
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('startScreen').classList.remove('hidden');
 }
-
-init();
 </script>
 </body>
 </html>
